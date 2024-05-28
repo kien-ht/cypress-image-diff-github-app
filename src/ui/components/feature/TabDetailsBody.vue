@@ -5,14 +5,13 @@
     style="scroll-behavior: auto; height: auto"
     :data="suite?.tests ?? []"
     default-expand-all
-    :row-key="(row) => row.name"
+    :row-key="(row: ResolvedTest) => row.name"
     @selection-change="onSelectionChange"
   >
     <el-table-column
-      v-if="mainStore.mode !== 'static'"
       type="selection"
       width="40"
-      :selectable="(row) => Boolean(row.diffDataUrl)"
+      :selectable="(row: ResolvedTest) => Boolean(row.diffDataUrl)"
     />
 
     <el-table-column type="expand">
@@ -72,10 +71,7 @@
     </el-table-column>
 
     <el-table-column class-name="min-content">
-      <template
-        v-if="mainStore.mode !== 'static'"
-        #header
-      >
+      <template #header>
         <div
           v-if="mainStore.selectedTestsFlatten.length"
           class="actions"
@@ -156,7 +152,7 @@ const dialogViewComparisonRef = ref<InstanceType<
 const isDialogApprovalListVisible = ref(false)
 
 const suite = computed(() => {
-  return mainStore.displayReport.suites.find((s) => s.id === props.suiteId)
+  return mainStore.displayReport?.suites.find((s) => s.id === props.suiteId)
 })
 
 const testTableRef = ref<InstanceType<typeof ElTable>>()

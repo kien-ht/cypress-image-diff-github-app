@@ -2,7 +2,7 @@
   "name": "cypress-image-diff-html-report",
   "description": "A Github App for Cypress Image Diff",
   "scripts": {
-    "prepare": "husky install",
+    "prepare": "husky install && netlify link",
     "format": "prettier . --write --list-different",
     "lint": "eslint . --fix --max-warnings=0",
     "start": "netlify functions:serve --port 6868",

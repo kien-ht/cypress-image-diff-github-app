@@ -8,6 +8,7 @@
     "strict": true,
     "esModuleInterop": true
   },
+  "include": ["src/github-app-server/functions/*.ts"],
   "ts-node": {
     "esm": true
   }

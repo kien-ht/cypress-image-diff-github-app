@@ -5,7 +5,7 @@
     ref="suiteTableRef"
     :data="mainStore.report?.suites"
     highlight-current-row
-    :row-key="(row) => row.id"
+    :row-key="(row: ResolvedSuite) => row.id"
     @current-change="onCurrentChange"
   >
     <el-table-column label="Suites">

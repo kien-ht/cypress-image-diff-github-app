@@ -24,6 +24,7 @@ const getReportsHandler: Handler = async (event) => {
     console.log(err)
     return {
       statusCode: 400,
+      // @ts-expect-error: any
       body: JSON.stringify({ message: err.message ?? err })
     }
   }
@@ -42,6 +43,7 @@ const updateReportsHandler: Handler = async (event) => {
     console.log(err)
     return {
       statusCode: 400,
+      // @ts-expect-error: any
       body: JSON.stringify({ message: err.message ?? err })
     }
   }
@@ -58,15 +60,15 @@ function redirectRoutes(
   routes: Record<string, Partial<Record<HttpMethod, Handler>>>
 ): Handler {
   return (event, context) => {
-    const { path, httpMethod } = event
-    const endpoint = path.replace(PATH_TO_SERVERLESS_FUNCTIONS, '')
+    const httpMethod = event.httpMethod as HttpMethod
+    const endpoint = event.path.replace(PATH_TO_SERVERLESS_FUNCTIONS, '')
 
     if (routes[endpoint] && routes[endpoint][httpMethod])
-      return routes[endpoint][httpMethod](event, context)
+      return routes[endpoint][httpMethod]!(event, context)
 
-    return {
+    return Promise.resolve({
       statusCode: 404,
       body: JSON.stringify({ message: 'Not found' })
-    }
+    })
   }
 }

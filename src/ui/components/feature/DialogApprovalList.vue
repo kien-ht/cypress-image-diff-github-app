@@ -10,7 +10,7 @@
     <el-table
       style="min-width: 50vw"
       :data="mainStore.selectedTestsFlatten"
-      :row-key="(row) => row.name"
+      :row-key="(row: ResolvedTest) => row.name"
     >
       <el-table-column
         type="index"

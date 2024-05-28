@@ -2,30 +2,38 @@ import { defineStore } from 'pinia'
 import { getReports } from '@/service'
 import { WorkflowInstance, ResolvedTest, ResolvedReport } from '@commonTypes'
 
+interface MainStoreState {
+  report?: ResolvedReport
+  isLoadingReport: boolean
+  selectedTests: Map<string, ResolvedTest[]>
+}
+
 export const useMainStore = defineStore('main', {
-  state: () => ({
-    report: window.__injectedData__.report,
-    mode: window.__injectedData__.mode,
+  state: (): MainStoreState => ({
+    report: undefined,
     isLoadingReport: false,
     selectedTests: new Map<string, ResolvedTest[]>()
   }),
 
   getters: {
-    displayReport: (state) =>
-      ({
-        ...state.report,
-        suites:
-          state.report?.suites.map((suite) => ({
-            ...suite,
-            tests: suite.tests.map((test) => ({
-              ...test,
-              baselineDataUrl: test.baselineDataUrl ?? test.baselinePath,
-              diffDataUrl: test.diffDataUrl ?? test.diffPath,
-              comparisonDataUrl: test.comparisonDataUrl ?? test.comparisonPath
-            }))
-          })) ?? []
-      }) as ResolvedReport,
-    selectedTestsFlatten: (state) =>
+    displayReport: (state): ResolvedReport | undefined =>
+      state.report
+        ? {
+            ...state.report,
+            suites:
+              state.report?.suites.map((suite) => ({
+                ...suite,
+                tests: suite.tests.map((test) => ({
+                  ...test,
+                  baselineDataUrl: test.baselineDataUrl ?? test.baselinePath,
+                  diffDataUrl: test.diffDataUrl ?? test.diffPath,
+                  comparisonDataUrl:
+                    test.comparisonDataUrl ?? test.comparisonPath
+                }))
+              })) ?? []
+          }
+        : undefined,
+    selectedTestsFlatten: (state): ResolvedTest[] =>
       Array.from(state.selectedTests.values()).flat()
   },
 
