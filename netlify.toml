@@ -4,7 +4,7 @@
   status = 200
 
 [functions]
-  directory = "src/github-app-server/functions"
+  directory = "dist/github-app-server/functions"
 
 [build]
   publish = "dist/ui"
