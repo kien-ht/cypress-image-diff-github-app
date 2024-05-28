@@ -109,7 +109,7 @@
       </template>
 
       <a
-        href="https://github.com/kien-ht/cypress-image-diff-html-report/issues"
+        href="https://github.com/kien-ht/cypress-image-diff-github-app/issues"
         class="report-issue-link"
       >
         Report an issue

@@ -23,7 +23,7 @@
 
     <p>
       If you encounter any problems, please report them
-      <a href="https://github.com/kien-ht/cypress-image-diff-html-report/issues"
+      <a href="https://github.com/kien-ht/cypress-image-diff-github-app/issues"
         >here</a
       >.
     </p>
