@@ -56,16 +56,6 @@
         </div>
 
         <div class="general-wrapper__cell">
-          <BaseIcon name="pull-request" />
-          <a
-            :href="pullRequest.url"
-            target="_blank"
-          >
-            See pull request
-          </a>
-        </div>
-
-        <div class="general-wrapper__cell">
           <BaseIcon name="commit" />
           <a
             :href="pullRequest.commitUrl"
@@ -75,36 +65,38 @@
             {{ pullRequest.commitHash.slice(0, 7) }}
           </a>
         </div>
+
+        <a
+          :href="pullRequest.url"
+          target="_blank"
+          class="see-pull-request"
+        >
+          <BaseIcon name="pull-request" />
+          <span>See Pull Request</span>
+        </a>
       </template>
 
       <template v-if="mainStore.report">
-        <h4>Browser</h4>
+        <h4>Environment</h4>
 
-        <div class="general-wrapper__cell">
-          <template v-if="browser">
-            <img
-              :src="browserIconMap[browser]"
-              height="20"
-            />
-            <span>{{ browser }}</span>
-          </template>
+        <div
+          v-if="browser"
+          class="general-wrapper__cell"
+        >
+          <img
+            :src="browserIconMap[browser]"
+            height="20"
+          />
+          <span style="text-transform: capitalize">{{ browser }}</span>
+          <span>- {{ mainStore.report.browserVersion }}</span>
         </div>
-
-        <div class="general-wrapper__cell">
-          <template v-if="browser">
-            <BaseIcon name="version" />
-            <span>{{ mainStore.report.browserVersion }}</span>
-          </template>
-        </div>
-
-        <h4>Cypress</h4>
 
         <div class="general-wrapper__cell">
           <img
             src="@/assets/images/cypress.png"
             height="20"
           />
-          <span>{{ mainStore.report.cypressVersion }}</span>
+          <span>Cypress - {{ mainStore.report.cypressVersion }}</span>
         </div>
       </template>
 
@@ -268,7 +260,7 @@ function isEmpty(obj: Record<any, any>) {
   padding: 0rem;
   position: absolute;
   bottom: 1rem;
-  right: 1rem;
+  right: 1.5rem;
 }
 .expand-bar {
   width: min-content;
@@ -283,7 +275,29 @@ function isEmpty(obj: Record<any, any>) {
 }
 .report-issue-link {
   margin-top: auto;
-  color: var(--color-text-seconadry);
+  color: var(--color-text-secondary);
   align-self: flex-start;
+}
+.see-pull-request {
+  display: flex;
+  gap: 0.5rem;
+  background-color: var(--el-color-primary-light-9);
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  margin-top: 0.5rem;
+  text-decoration: none;
+}
+.see-pull-request > svg {
+  position: absolute;
+}
+.see-pull-request > span {
+  flex: 1 1 auto;
+  text-align: center;
+}
+.see-pull-request:hover {
+  background-color: var(--color-primary);
+  color: var(--r-white);
 }
 </style>
