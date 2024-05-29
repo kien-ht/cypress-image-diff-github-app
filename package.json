@@ -7,9 +7,7 @@
     "lint": "eslint . --fix --max-warnings=0",
     "start": "netlify functions:serve --port 6868",
     "dev:ui": "vite dev --config src/ui/vite.config.js",
-    "build:ui": "vite build --config src/ui/vite.config.js",
-    "build:server": "tsc",
-    "build": "run-s build:ui build:server",
+    "build": "vite build --config src/ui/vite.config.js",
     "type-check:ui": "vue-tsc --noEmit --project src/ui/tsconfig.json",
     "type-check:rest": "tsc --noEmit",
     "type-check": "run-s -c type-check:*"
