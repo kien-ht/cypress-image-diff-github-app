@@ -134,8 +134,7 @@ async function getSnapshotsHashes(
   try {
     const hashes = await Promise.all(
       snapshots.map(async (snapshot) => {
-        const content =
-          snapshot.comparisonDataUrl.split(',')[1] ?? snapshot.comparisonDataUrl
+        const content = await toBase64(snapshot.comparisonDataUrl)
         const { data } = await octokit.rest.git.createBlob({
           owner,
           repo,
@@ -150,4 +149,14 @@ async function getSnapshotsHashes(
   } catch (err) {
     return Promise.reject(err)
   }
+}
+
+async function toBase64(url: string): Promise<string> {
+  if (!url) return ''
+
+  const response = await fetch(url)
+  if (!response.ok) return ''
+
+  const arrayBuffer = await response.arrayBuffer()
+  return Buffer.from(arrayBuffer).toString('base64')
 }
