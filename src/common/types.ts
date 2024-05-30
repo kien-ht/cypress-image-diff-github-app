@@ -28,9 +28,9 @@ export interface Test {
   baselinePath: string
   diffPath: string
   comparisonPath: string
-  baselineDataUrl?: string
-  diffDataUrl?: string
-  comparisonDataUrl?: string
+  baselineDataUrl: string
+  diffDataUrl: string
+  comparisonDataUrl: string
 }
 
 export type TestStatus = 'pass' | 'fail'
@@ -49,6 +49,10 @@ export interface ResolvedSuite extends Suite {
 export interface ResolvedTest extends Test {
   passed: number
   failed: number
+}
+
+export interface TestInStagedChange extends ResolvedTest {
+  comparisonSha: string
 }
 
 export type RunMode = 'static' | 'local' | 'ci'
@@ -150,13 +154,18 @@ export interface HashedSnapshotToUpdate {
 
 export interface UpdateBaselines {
   instance: WorkflowInstance
-  snapshots: SnapshotToUpdate[]
+  snapshots: HashedSnapshotToUpdate[]
+}
+
+export interface AddBaselinesToStagedChanges {
+  instance: WorkflowInstance
+  snapshot: SnapshotToUpdate
 }
 
 export interface GetSnapshotsHashed {
   owner: string
   repo: string
-  snapshots: SnapshotToUpdate[]
+  snapshot: SnapshotToUpdate
 }
 
 export type ProbotLogLevel =

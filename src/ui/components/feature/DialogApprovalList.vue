@@ -111,7 +111,6 @@ export interface DialogApprovalListProps {
 
 export interface DialogApprovalListEmits {
   (e: 'update:show', show: boolean): void
-  (e: 'submitted'): void
   (e: 'deselected', row: ResolvedTest): void
 }
 </script>
@@ -141,12 +140,11 @@ async function onClickUpdateCi() {
       instance: route.query as unknown as WorkflowInstance,
       snapshots: mainStore.selectedTestsFlatten.map((s) => ({
         baselinePath: s.baselinePath,
-        comparisonDataUrl: s.comparisonDataUrl!
+        sha: s.comparisonSha
       }))
     })
 
     mainStore.selectedTests = new Map()
-    emit('submitted')
     ElMessage({
       type: 'success',
       message: 'Updated'

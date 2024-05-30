@@ -6,7 +6,8 @@ import {
   Report,
   GetSnapshotsHashed,
   HashedSnapshotToUpdate,
-  ProbotLogLevel
+  ProbotLogLevel,
+  AddBaselinesToStagedChanges
 } from '../common/types.js'
 import { App as OctokitApp, Octokit } from 'octokit'
 import { getReportJsonWithTotalStats } from '../common/utils.js'
@@ -34,21 +35,12 @@ export class CiController {
 
     const octokit = await this.app.getInstallationOctokit(installationId)
 
-    const hashSnapshotToUpdate = await getSnapshotsHashes(
-      {
-        owner: instance.owner,
-        repo: instance.repo,
-        snapshots
-      },
-      octokit
-    )
-
     // create a new tree
     const { data } = await octokit.rest.git.createTree({
       owner,
       repo,
       base_tree: sha,
-      tree: hashSnapshotToUpdate.map((s) => ({
+      tree: snapshots.map((s) => ({
         path: s.baselinePath,
         sha: s.sha,
         mode: '100644',
@@ -72,6 +64,16 @@ export class CiController {
       ref: `heads/${ref}`,
       sha: commitData.sha
     })
+  }
+
+  async addToStagedChanges({
+    instance,
+    snapshot
+  }: AddBaselinesToStagedChanges): Promise<HashedSnapshotToUpdate> {
+    const { installationId, owner, repo } = instance
+    const octokit = await this.app.getInstallationOctokit(installationId)
+
+    return await getSnapshotsHash({ owner, repo, snapshot }, octokit)
   }
 }
 
@@ -127,25 +129,20 @@ function getProbotConfig() {
   }
 }
 
-async function getSnapshotsHashes(
-  { owner, repo, snapshots }: GetSnapshotsHashed,
+async function getSnapshotsHash(
+  { owner, repo, snapshot }: GetSnapshotsHashed,
   octokit: Octokit | ProbotOctokit
-): Promise<HashedSnapshotToUpdate[]> {
+): Promise<HashedSnapshotToUpdate> {
   try {
-    const hashes = await Promise.all(
-      snapshots.map(async (snapshot) => {
-        const content = await toBase64(snapshot.comparisonDataUrl)
-        const { data } = await octokit.rest.git.createBlob({
-          owner,
-          repo,
-          content,
-          encoding: 'base64'
-        })
-        return { baselinePath: snapshot.baselinePath, sha: data.sha as string }
-      })
-    )
+    const content = await toBase64(snapshot.comparisonDataUrl)
+    const { data } = await octokit.rest.git.createBlob({
+      owner,
+      repo,
+      content,
+      encoding: 'base64'
+    })
 
-    return hashes
+    return { baselinePath: snapshot.baselinePath, sha: data.sha as string }
   } catch (err) {
     return Promise.reject(err)
   }

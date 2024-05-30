@@ -100,7 +100,7 @@ interface TabItem {
 }
 
 const emit = defineEmits<{
-  selected: [testName: string, toAdd: boolean]
+  selected: [test: ResolvedTest, toAdd: boolean]
 }>()
 
 const mainStore = useMainStore()
@@ -143,7 +143,7 @@ function open(test: ResolvedTest) {
 }
 
 function onClickUpdate(toAdd: boolean) {
-  emit('selected', currentTest.value!.name, toAdd)
+  emit('selected', currentTest.value!, toAdd)
   isVisible.value = false
 }
 
