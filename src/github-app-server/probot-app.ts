@@ -7,16 +7,37 @@ import {
 import { DetailsUrlQuery, GithubCommitState } from '../common/types.js'
 
 export const appFn = (app: Probot) => {
-  // Mark the last pending commit status as skipped if any new push
-  app.on('pull_request.synchronize', async (context): Promise<void> => {
+  // Create a new commit status
+  app.on('workflow_run.requested', async (context): Promise<void> => {
+    if (context.payload.workflow_run.path !== GITHUB_APP_WORKFLOW_PATH) return
+
     const owner = context.payload.repository.owner.login
     const repo = context.payload.repository.name
-    const sha = context.payload.pull_request.head.sha
+    const head_sha = context.payload.workflow_run.head_sha
 
+    // Create a new commit status
+    try {
+      await context.octokit.rest.repos.createCommitStatus({
+        owner,
+        repo,
+        sha: head_sha,
+        state: 'pending',
+        description: 'Visual Regression Test',
+        context: GITHUB_APP_NAME
+      })
+    } catch (err) {
+      console.log(err)
+    }
+
+    // Mark the last pending commit status as skipped if any new push
     try {
       // Get the last commit before this new commit
       const { data: getCommitsData } =
-        await context.octokit.rest.repos.getCommit({ owner, repo, ref: sha })
+        await context.octokit.rest.repos.getCommit({
+          owner,
+          repo,
+          ref: head_sha
+        })
 
       if (!getCommitsData.parents[0]?.sha) return
 
@@ -38,28 +59,6 @@ export const appFn = (app: Probot) => {
           context: GITHUB_APP_NAME
         })
       }
-    } catch (err) {
-      console.log(err)
-    }
-  })
-
-  // Create a new commit status
-  app.on('workflow_run.requested', async (context): Promise<void> => {
-    if (context.payload.workflow_run.path !== GITHUB_APP_WORKFLOW_PATH) return
-
-    const owner = context.payload.repository.owner.login
-    const repo = context.payload.repository.name
-    const head_sha = context.payload.workflow_run.head_sha
-
-    try {
-      await context.octokit.rest.repos.createCommitStatus({
-        owner,
-        repo,
-        sha: head_sha,
-        state: 'pending',
-        description: 'Visual Regression Test',
-        context: GITHUB_APP_NAME
-      })
     } catch (err) {
       console.log(err)
     }
