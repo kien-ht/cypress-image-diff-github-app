@@ -19,7 +19,10 @@
           </a>
         </div>
 
-        <div class="general-wrapper__cell">
+        <div
+          v-if="pullRequest.author"
+          class="general-wrapper__cell"
+        >
           <img
             :src="pullRequest.authorAvatar"
             width="20"
@@ -32,8 +35,9 @@
             <a
               :href="pullRequest.authorUrl"
               target="_blank"
-              >{{ pullRequest.author }}</a
             >
+              {{ pullRequest.author }}
+            </a>
             pushed
           </span>
         </div>
@@ -147,9 +151,9 @@ export interface PullRequestInstance {
   repoName: string
   repoUrl: string
   branch: string
-  author: string
-  authorAvatar: string
-  authorUrl: string
+  author?: string
+  authorAvatar?: string
+  authorUrl?: string
   targetBranch: string
   commitHash: string
   commitUrl: string

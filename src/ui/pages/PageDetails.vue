@@ -136,7 +136,6 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 
 import { useMainStore } from '@/store'
 import { TabValue } from '@/types'
-import { WorkflowInstance } from '@commonTypes'
 
 dayjs.extend(relativeTime)
 
@@ -144,7 +143,7 @@ const mainStore = useMainStore()
 const activeTab = ref<keyof typeof TabValue>('Details')
 
 const route = useRoute()
-mainStore.fetchReport(route.query as unknown as WorkflowInstance)
+mainStore.fetchReport(route.query.artifactsUrl as string)
 
 const passPercentage = computed(() => {
   return mainStore.report

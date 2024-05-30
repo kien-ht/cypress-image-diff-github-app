@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { getReports } from '@/service'
-import { WorkflowInstance, ResolvedTest, ResolvedReport } from '@commonTypes'
+import { ResolvedTest, ResolvedReport } from '@commonTypes'
 
 interface MainStoreState {
   report?: ResolvedReport
@@ -38,10 +38,10 @@ export const useMainStore = defineStore('main', {
   },
 
   actions: {
-    async fetchReport(instance?: WorkflowInstance) {
+    async fetchReport(artifactsUrl?: string) {
       this.isLoadingReport = true
       try {
-        this.report = await getReports(instance)
+        this.report = await getReports(artifactsUrl)
       } catch (err) {
         Promise.reject(err)
       }

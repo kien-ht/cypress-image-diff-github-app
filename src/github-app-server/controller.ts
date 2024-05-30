@@ -1,17 +1,21 @@
 import { ProbotOctokit } from 'probot'
-import AdmZip from 'adm-zip'
+import fetch from 'node-fetch'
 import {
   UpdateBaselines,
   ResolvedReport,
-  WorkflowInstance,
   Report,
-  DownloadArtifactsOptions,
   GetSnapshotsHashed,
   HashedSnapshotToUpdate,
   ProbotLogLevel
 } from '../common/types.js'
 import { App as OctokitApp, Octokit } from 'octokit'
 import { getReportJsonWithTotalStats } from '../common/utils.js'
+
+interface ArtifactItem {
+  path: string
+  node_index: number
+  url: string
+}
 
 export class CiController {
   private app: OctokitApp
@@ -20,11 +24,8 @@ export class CiController {
     this.app = new OctokitApp(getProbotConfig())
   }
 
-  async getReports(instance: WorkflowInstance): Promise<ResolvedReport> {
-    const octokit = await this.app.getInstallationOctokit(
-      instance.installationId
-    )
-    const report = await downloadArtifacts(instance, octokit)
+  async getReports(artifactsUrl?: string): Promise<ResolvedReport> {
+    const report = await downloadArtifacts(artifactsUrl)
     return getReportJsonWithTotalStats(report)
   }
 
@@ -74,34 +75,47 @@ export class CiController {
   }
 }
 
-export async function downloadArtifacts(
-  instance: DownloadArtifactsOptions,
-  octokit: Octokit | ProbotOctokit
-): Promise<Report> {
-  const { owner, repo, workflowId } = instance
-  const { data } = await octokit.rest.actions.listWorkflowRunArtifacts({
-    owner,
-    repo,
-    run_id: workflowId
+export async function downloadArtifacts(url?: string): Promise<Report> {
+  if (!url) throw Error('No artifacts url found')
+
+  const response = await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'Circle-Token':
+        'CCIPAT_7NPK5NbZX7s7SbnUjm7rsM_faf5d5c3bc1924ac33926837cbe36c9c683fc287'
+    }
   })
+  if (!response.ok) throw Error(`Can't download this artifacts url: ${url}`)
 
-  if (data.artifacts.length === 0) return Promise.reject('Not found artifacts')
+  const data = (await response.json()) as { items: ArtifactItem[] }
 
-  const artifact = data.artifacts[0]
+  if (data.items.length === 0) return Promise.reject('Not found artifacts')
 
-  const { data: zip } = await octokit.rest.actions.downloadArtifact({
-    owner,
-    repo,
-    artifact_id: artifact.id,
-    archive_format: 'zip'
-  })
+  const reportItem = data.items.find((i) => /\.json$/.test(i.path))
 
-  const admZip = new AdmZip(Buffer.from(zip as ArrayBuffer))
-  const report = admZip.getEntries().find((z) => /\.json$/.test(z.name))
+  if (!reportItem) return Promise.reject('Not found report')
 
-  if (!report) return Promise.reject('Not found report')
-
-  return JSON.parse(report.getData().toString())
+  const report = (await (await fetch(reportItem.url)).json()) as Report
+  const urlMap = data.items.reduce(
+    (map, item) => {
+      map[item.path] = item.url
+      return map
+    },
+    {} as Record<string, string>
+  )
+  return {
+    ...report,
+    suites: report.suites.map((s) => ({
+      ...s,
+      tests: s.tests.map((t) => ({
+        ...t,
+        baselineDataUrl: urlMap[t.baselinePath],
+        diffDataUrl: urlMap[t.diffPath],
+        comparisonDataUrl: urlMap[t.comparisonPath]
+      }))
+    }))
+  }
 }
 
 function getProbotConfig() {

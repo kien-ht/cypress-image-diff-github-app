@@ -122,14 +122,14 @@ export interface WorkflowInstance {
   repo: string
   sha: string
   ref: string
-  workflowId: number
 }
 
 export interface DetailsUrlQuery extends WorkflowInstance {
   pullNumber: number
   targetRef: string
-  author: string
-  authorAvatar: string
+  author?: string
+  authorAvatar?: string
+  artifactsUrl?: string
 }
 
 export interface DownloadArtifactsOptions {

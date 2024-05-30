@@ -1,5 +1,5 @@
 import { Handler } from '@netlify/functions'
-import { UpdateBaselines, WorkflowInstance } from '../../common/types'
+import { UpdateBaselines } from '../../common/types'
 import { CiController } from '../controller'
 import { PATH_TO_SERVERLESS_FUNCTIONS } from '../../common/constants'
 
@@ -14,7 +14,7 @@ const getReportsHandler: Handler = async (event) => {
   try {
     const controller = new CiController()
     const json = await controller.getReports(
-      event.queryStringParameters as unknown as WorkflowInstance
+      event.queryStringParameters?.artifactsUrl
     )
     return {
       statusCode: 200,

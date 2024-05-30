@@ -27,16 +27,16 @@
   "license": "MIT",
   "dependencies": {
     "@probot/adapter-aws-lambda-serverless": "^3.0.4",
-    "adm-zip": "^0.5.12",
     "dayjs": "^1.11.11",
     "element-plus": "^2.6.0",
     "fs-extra": "^11.1.1",
     "lodash": "^4.17.21",
+    "node-fetch": "^3.3.2",
     "octokit": "^3.2.1",
+    "pinia": "^2.1.6",
     "probot": "^13.2.1",
     "vue": "^3.3.4",
-    "vue-router": "^4.3.2",
-    "pinia": "^2.1.6"
+    "vue-router": "^4.3.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.7.1",

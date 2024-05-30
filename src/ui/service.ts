@@ -1,26 +1,17 @@
-import {
-  WorkflowInstance,
-  ResolvedReport,
-  TestIdentity,
-  UpdateBaselines
-} from '@commonTypes'
+import { ResolvedReport, TestIdentity, UpdateBaselines } from '@commonTypes'
 import { PATH_TO_SERVERLESS_FUNCTIONS } from '../common/constants'
 
 export { getReports, updateTests, updateBaselines }
 
 monkeyPatchWindowFetch()
 
-async function getReports(
-  instance?: WorkflowInstance
-): Promise<ResolvedReport> {
+async function getReports(artifactsUrl?: string): Promise<ResolvedReport> {
   try {
     let url = '/api/reports'
 
-    if (instance) {
-      url += `?${new URLSearchParams(
-        Object.entries(instance).map(([k, v]) => [k, String(v)])
-      ).toString()}`
-    }
+    url += `?${new URLSearchParams(
+      Object.entries({ artifactsUrl }).map(([k, v]) => [k, String(v)])
+    ).toString()}`
 
     const response = await fetch(url)
     if (!response.ok) throw Error('Network response was not OK')
