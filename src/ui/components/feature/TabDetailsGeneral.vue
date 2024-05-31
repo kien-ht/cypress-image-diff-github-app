@@ -14,8 +14,10 @@
           <a
             :href="pullRequest.repoUrl"
             target="_blank"
+            class="external-link"
           >
             {{ pullRequest.repoName }}
+            <BaseIcon name="external-link" />
           </a>
         </div>
 
@@ -32,12 +34,7 @@
             :href="pullRequest.url"
             target="_blank"
           >
-            <a
-              :href="pullRequest.authorUrl"
-              target="_blank"
-            >
-              {{ pullRequest.author }}
-            </a>
+            {{ pullRequest.author }}
             pushed
           </span>
         </div>
@@ -64,9 +61,11 @@
           <a
             :href="pullRequest.commitUrl"
             target="_blank"
+            class="external-link"
           >
             Commit
             {{ pullRequest.commitHash.slice(0, 7) }}
+            <BaseIcon name="external-link" />
           </a>
         </div>
 
@@ -153,7 +152,6 @@ export interface PullRequestInstance {
   branch: string
   author?: string
   authorAvatar?: string
-  authorUrl?: string
   targetBranch: string
   commitHash: string
   commitUrl: string
@@ -187,8 +185,7 @@ const pullRequest = computed<PullRequestInstance>(() => {
     commitHash: sha,
     commitUrl: `https://github.com/${owner}/${repo}/pull/${pullNumber}/commits/${sha}`,
     author,
-    authorAvatar,
-    authorUrl: `https://github.com/${owner}`
+    authorAvatar
   }
 })
 
@@ -257,6 +254,11 @@ function isEmpty(obj: Record<any, any>) {
   background-color: var(--color-background-mute);
   padding: 0 2px;
   border-radius: 0.5rem;
+}
+.general-wrapper__cell > .external-link {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .collapse-button {

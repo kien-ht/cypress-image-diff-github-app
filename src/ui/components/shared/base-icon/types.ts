@@ -17,3 +17,4 @@ export type SvgIcon =
   | 'right-chevron'
   | 'commit'
   | 'version'
+  | 'external-link'
