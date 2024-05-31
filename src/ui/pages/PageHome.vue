@@ -27,17 +27,47 @@
         >here</a
       >.
     </p>
+
+    <a
+      v-if="token"
+      :href="installationUrl"
+      class="link-button"
+    >
+      <img src="@/assets/images/github.png" />
+      <span>Install Cypress Image Diff</span>
+    </a>
+    <a
+      v-else
+      :href="githubLoginUrl"
+      class="link-button"
+    >
+      <img src="@/assets/images/github.png" />
+      <span>Login With Github</span>
+    </a>
   </main>
 
   <footer class="footer">
     <a href="https://github.com/uktrade/cypress-image-diff">
       <img src="@/assets/images/github.png" />
-      <span>Github</span>
+      <span>Source</span>
     </a>
   </footer>
 </template>
 
-<script lang="ts" setup></script>
+<script lang="ts" setup>
+import { useStorage } from '@/hooks'
+import { useMainStore } from '@/store'
+
+const mainStore = useMainStore()
+const [token] = useStorage('token', '')
+
+const githubLoginUrl = computed(
+  () =>
+    `https://github.com/login/oauth/authorize?client_id=${mainStore.publicConfig?.clientId}`
+)
+const installationUrl =
+  'https://github.com/apps/cypress-image-diff/installations/new'
+</script>
 
 <style scoped>
 .main-wrapper {

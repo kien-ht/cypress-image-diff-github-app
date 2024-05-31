@@ -7,7 +7,8 @@ import {
   GetSnapshotsHashed,
   HashedSnapshotToUpdate,
   ProbotLogLevel,
-  AddBaselinesToStagedChanges
+  AddBaselinesToStagedChanges,
+  PublicConfig
 } from '../common/types.js'
 import { App as OctokitApp, Octokit } from 'octokit'
 import { getReportJsonWithTotalStats } from '../common/utils.js'
@@ -74,6 +75,28 @@ export class CiController {
     const octokit = await this.app.getInstallationOctokit(installationId)
 
     return await getSnapshotsHash({ owner, repo, snapshot }, octokit)
+  }
+
+  getPublicConfig(): PublicConfig {
+    return { clientId: process.env.CLIENT_ID! }
+  }
+
+  async getUserAccessToken(code: string): Promise<string> {
+    const body = new URLSearchParams({
+      client_id: process.env.CLIENT_ID!,
+      client_secret: process.env.CLIENT_SECRET!,
+      code
+    })
+    const response = await fetch(
+      'https://github.com/login/oauth/access_token',
+      {
+        method: 'POST',
+        body,
+        headers: { Accept: 'application/json' }
+      }
+    )
+
+    return ((await response.json()) as { access_token: string }).access_token
   }
 }
 

@@ -85,3 +85,21 @@
 a {
   color: var(--color-primary);
 }
+
+a.link-button {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  background-color: var(--el-color-primary-light-9);
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  margin-top: 0.5rem;
+  text-decoration: none;
+}
+
+a.link-button:hover {
+  background-color: var(--color-primary);
+  color: var(--r-white);
+}

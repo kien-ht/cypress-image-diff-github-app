@@ -2,15 +2,16 @@ import {
   ResolvedReport,
   AddBaselinesToStagedChanges,
   UpdateBaselines,
-  HashedSnapshotToUpdate
+  HashedSnapshotToUpdate,
+  PublicConfig
 } from '@commonTypes'
 import { PATH_TO_SERVERLESS_FUNCTIONS } from '../common/constants'
 
-export { getReports, addToStagedChanges, updateBaselines }
-
 monkeyPatchWindowFetch()
 
-async function getReports(artifactsUrl?: string): Promise<ResolvedReport> {
+export async function getReports(
+  artifactsUrl?: string
+): Promise<ResolvedReport> {
   try {
     let url = '/api/reports'
 
@@ -27,7 +28,29 @@ async function getReports(artifactsUrl?: string): Promise<ResolvedReport> {
   }
 }
 
-async function addToStagedChanges(
+export async function getPublicConfig(): Promise<PublicConfig> {
+  try {
+    const response = await fetch('/api/config')
+    if (!response.ok) throw Error((await response.json()).message)
+
+    return await response.json()
+  } catch (err) {
+    throw Error((err as Error).message)
+  }
+}
+
+export async function getAccessToken(code: string): Promise<string> {
+  try {
+    const response = await fetch(`/api/auth?code=${code}`)
+    if (!response.ok) throw Error((await response.json()).message)
+
+    return await response.json()
+  } catch (err) {
+    throw Error((err as Error).message)
+  }
+}
+
+export async function addToStagedChanges(
   args: AddBaselinesToStagedChanges
 ): Promise<HashedSnapshotToUpdate> {
   try {
@@ -45,7 +68,7 @@ async function addToStagedChanges(
   }
 }
 
-async function updateBaselines(args: UpdateBaselines): Promise<void> {
+export async function updateBaselines(args: UpdateBaselines): Promise<void> {
   try {
     const response = await fetch('/api/reports', {
       method: 'PATCH',

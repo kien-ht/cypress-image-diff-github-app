@@ -72,6 +72,62 @@ const addToStagedChangesHandler: Handler = async (event) => {
   }
 }
 
+const getPublicConfigHandler: Handler = async () => {
+  try {
+    const controller = new CiController()
+    const config = controller.getPublicConfig()
+    return {
+      statusCode: 200,
+      body: JSON.stringify(config)
+    }
+  } catch (err) {
+    console.log(err)
+    return {
+      statusCode: 400,
+      // @ts-expect-error: any
+      body: JSON.stringify({ message: err.message ?? err })
+    }
+  }
+}
+
+const getUserAccessTokenHandler: Handler = async (event) => {
+  try {
+    const controller = new CiController()
+    const token = await controller.getUserAccessToken(
+      event.queryStringParameters!.code!
+    )
+    return {
+      statusCode: 200,
+      body: JSON.stringify(token)
+    }
+  } catch (err) {
+    console.log(err)
+    return {
+      statusCode: 400,
+      // @ts-expect-error: any
+      body: JSON.stringify({ message: err.message ?? err })
+    }
+  }
+}
+
+// const getUserHandler: Handler = async () => {
+//   try {
+//     // const controller = new CiController()
+//     // const token = await controller.getUserAccessToken()
+//     return {
+//       statusCode: 200,
+//       body: JSON.stringify(token)
+//     }
+//   } catch (err) {
+//     console.log(err)
+//     return {
+//       statusCode: 400,
+//       // @ts-expect-error: any
+//       body: JSON.stringify({ message: err.message ?? err })
+//     }
+//   }
+// }
+
 export const handler = redirectRoutes({
   '/api/reports/staged': {
     POST: addToStagedChangesHandler
@@ -79,7 +135,16 @@ export const handler = redirectRoutes({
   '/api/reports': {
     GET: getReportsHandler,
     PATCH: updateReportsHandler
+  },
+  '/api/config': {
+    GET: getPublicConfigHandler
+  },
+  '/api/auth': {
+    GET: getUserAccessTokenHandler
   }
+  // '/api/user': {
+  //   GET: getUserHandler
+  // }
 })
 
 function redirectRoutes(

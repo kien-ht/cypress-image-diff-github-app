@@ -5,7 +5,7 @@
       src="@/assets/images/cypress-image-diff-logo.png"
     />
 
-    <h1 style="font-weight: bold">Cypress Image Diff HTML Report</h1>
+    <h1 style="font-weight: bold">Cypress Image Diff</h1>
   </header>
 
   <main class="main">

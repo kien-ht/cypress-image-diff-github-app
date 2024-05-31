@@ -177,3 +177,7 @@ export type ProbotLogLevel =
   | 'fatal'
 
 export type GithubCommitState = 'error' | 'success' | 'failure' | 'pending'
+
+export interface PublicConfig {
+  clientId: string
+}

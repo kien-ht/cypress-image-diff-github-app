@@ -72,7 +72,7 @@
         <a
           :href="pullRequest.url"
           target="_blank"
-          class="see-pull-request"
+          class="link-button"
         >
           <BaseIcon name="pull-request" />
           <span>See Pull Request</span>
@@ -284,26 +284,11 @@ function isEmpty(obj: Record<any, any>) {
   color: var(--color-text-secondary);
   align-self: flex-start;
 }
-.see-pull-request {
-  display: flex;
-  gap: 0.5rem;
-  background-color: var(--el-color-primary-light-9);
-  border: 1px solid var(--color-primary);
-  color: var(--color-primary);
-  padding: 0.5rem 1rem;
-  border-radius: 1rem;
-  margin-top: 0.5rem;
-  text-decoration: none;
-}
-.see-pull-request > svg {
+.link-button > svg {
   position: absolute;
 }
-.see-pull-request > span {
+.link-button > span {
   flex: 1 1 auto;
   text-align: center;
-}
-.see-pull-request:hover {
-  background-color: var(--color-primary);
-  color: var(--r-white);
 }
 </style>

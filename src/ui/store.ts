@@ -1,18 +1,20 @@
 import { defineStore } from 'pinia'
-import { getReports } from '@/service'
-import { TestInStagedChange, ResolvedReport } from '@commonTypes'
+import { getReports, getPublicConfig } from '@/service'
+import { TestInStagedChange, ResolvedReport, PublicConfig } from '@commonTypes'
 
 interface MainStoreState {
   report?: ResolvedReport
   isLoadingReport: boolean
   selectedTests: Map<string, TestInStagedChange[]>
+  publicConfig?: PublicConfig
 }
 
 export const useMainStore = defineStore('main', {
   state: (): MainStoreState => ({
     report: undefined,
     isLoadingReport: false,
-    selectedTests: new Map<string, TestInStagedChange[]>()
+    selectedTests: new Map<string, TestInStagedChange[]>(),
+    publicConfig: undefined
   }),
 
   getters: {
@@ -53,6 +55,14 @@ export const useMainStore = defineStore('main', {
         Promise.reject(err)
       }
       this.isLoadingReport = false
+    },
+
+    async fetchPublicConfig() {
+      try {
+        this.publicConfig = await getPublicConfig()
+      } catch (err) {
+        Promise.reject(err)
+      }
     }
   }
 })
