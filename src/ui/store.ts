@@ -1,18 +1,18 @@
 import { defineStore } from 'pinia'
 import { getReports } from '@/service'
-import { ResolvedTest, ResolvedReport } from '@commonTypes'
+import { TestInStagedChange, ResolvedReport } from '@commonTypes'
 
 interface MainStoreState {
   report?: ResolvedReport
   isLoadingReport: boolean
-  selectedTests: Map<string, ResolvedTest[]>
+  selectedTests: Map<string, TestInStagedChange[]>
 }
 
 export const useMainStore = defineStore('main', {
   state: (): MainStoreState => ({
     report: undefined,
     isLoadingReport: false,
-    selectedTests: new Map<string, ResolvedTest[]>()
+    selectedTests: new Map<string, TestInStagedChange[]>()
   }),
 
   getters: {
@@ -33,8 +33,15 @@ export const useMainStore = defineStore('main', {
               })) ?? []
           }
         : undefined,
-    selectedTestsFlatten: (state): ResolvedTest[] =>
-      Array.from(state.selectedTests.values()).flat()
+    selectedTestsFlatten: (state): TestInStagedChange[] =>
+      Array.from(state.selectedTests.values()).flat(),
+
+    selectedTestsFlattenMap: function (): Map<string, TestInStagedChange> {
+      return this.selectedTestsFlatten.reduce((map, item) => {
+        map.set(item.baselinePath, item)
+        return map
+      }, new Map())
+    }
   },
 
   actions: {

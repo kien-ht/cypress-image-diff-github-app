@@ -1,18 +1,25 @@
 <template>
   <el-table
-    ref="testTableRef"
     v-loading="mainStore.isLoadingReport"
     style="scroll-behavior: auto; height: auto"
     :data="suite?.tests ?? []"
     default-expand-all
     :row-key="(row: ResolvedTest) => row.name"
-    @selection-change="onSelectionChange"
   >
     <el-table-column
-      type="selection"
-      width="40"
-      :selectable="(row: ResolvedTest) => Boolean(row.diffDataUrl)"
-    />
+      type="index"
+      width="1"
+    >
+      <template #default="{ row }">
+        <div
+          :class="{
+            'row-selected': mainStore.selectedTestsFlattenMap.get(
+              row.baselinePath
+            )
+          }"
+        />
+      </template>
+    </el-table-column>
 
     <el-table-column type="expand">
       <template #default="{ row }">
@@ -109,10 +116,30 @@
         <el-button
           size="small"
           type="primary"
+          plain
           @click="dialogViewComparisonRef!.open(row)"
         >
           <BaseIcon name="inspect" />
-          <span style="margin-left: 0.5rem">Inspect</span>
+          <span style="margin-left: 0.3rem">Inspect</span>
+        </el-button>
+        <el-button
+          v-if="mainStore.selectedTestsFlattenMap.get(row.baselinePath)"
+          size="small"
+          type="danger"
+          @click="onClickDeselect(row)"
+        >
+          <BaseIcon name="minus" />
+          <span style="margin-left: 0.3rem; min-width: 5rem">Deselect</span>
+        </el-button>
+        <el-button
+          v-else
+          :loading="isSelecting === row.name"
+          size="small"
+          type="success"
+          @click="onClickSelect(row)"
+        >
+          <BaseIcon name="plus" />
+          <span style="margin-left: 0.3rem; min-width: 5rem">Select</span>
         </el-button>
       </template>
     </el-table-column>
@@ -120,21 +147,22 @@
 
   <DialogViewComparison
     ref="dialogViewComparisonRef"
-    @selected="doSelectedToggle"
+    @selected="doSelected"
   />
 
   <DialogApprovalList
     v-model:show="isDialogApprovalListVisible"
-    @deselected="doDeselected"
-    @submitted="testTableRef?.clearSelection"
+    @deselected="onClickDeselect"
   />
 </template>
 
 <script lang="ts" setup>
-import type { ElTable } from 'element-plus'
+import { useRoute } from 'vue-router'
+import { ElMessage } from 'element-plus'
 import { useMainStore } from '@/store'
 import type { default as DialogViewComparison } from './DialogViewComparison.vue'
-import { TestStatus, ResolvedTest } from '@commonTypes'
+import { TestStatus, ResolvedTest, WorkflowInstance } from '@commonTypes'
+import { addToStagedChanges } from '@/service'
 
 const props = defineProps<{
   suiteId?: string
@@ -145,52 +173,52 @@ const fitlerStatuses: { text: string; value: TestStatus }[] = [
   { text: 'Pass', value: 'pass' }
 ]
 
+const route = useRoute()
 const mainStore = useMainStore()
 const dialogViewComparisonRef = ref<InstanceType<
   typeof DialogViewComparison
 > | null>()
 const isDialogApprovalListVisible = ref(false)
+const isSelecting = ref<string | undefined>()
 
 const suite = computed(() => {
   return mainStore.displayReport?.suites.find((s) => s.id === props.suiteId)
 })
 
-const testTableRef = ref<InstanceType<typeof ElTable>>()
-watch(() => props.suiteId, restoreSelection)
+async function doSelected(row: ResolvedTest) {
+  const foundTest = mainStore.selectedTestsFlattenMap.get(row.baselinePath)
+  foundTest ? onClickDeselect(foundTest) : await onClickSelect(row)
+}
 
-function onSelectionChange(selections: ResolvedTest[]) {
-  if (selections.length) {
-    mainStore.selectedTests.set(props.suiteId!, selections)
-  } else {
-    mainStore.selectedTests.delete(props.suiteId!)
+async function onClickSelect(row: ResolvedTest) {
+  isSelecting.value = row.name
+  try {
+    const data = await addToStagedChanges({
+      instance: route.query as unknown as WorkflowInstance,
+      snapshot: row
+    })
+    const newSelections = [
+      ...(mainStore.selectedTests.get(row.specPath) ?? []),
+      { ...row, comparisonSha: data.sha }
+    ]
+    mainStore.selectedTests.set(row.specPath, newSelections)
+  } catch (err) {
+    ElMessage({
+      type: 'error',
+      message: (err as Error).message
+    })
   }
+  isSelecting.value = undefined
 }
 
-async function restoreSelection() {
-  const selections = mainStore.selectedTests.get(props.suiteId!)
-  if (selections) {
-    await nextTick()
-    selections.forEach((row) =>
-      testTableRef.value!.toggleRowSelection(row, true)
-    )
-  }
-}
-
-function doSelectedToggle(testName: string, toAdd: boolean) {
-  const foundTest = suite.value!.tests.find((t) => t.name === testName)!
-  testTableRef.value!.toggleRowSelection(foundTest, toAdd)
-}
-
-function doDeselected(row: ResolvedTest) {
-  let foundTest = suite.value!.tests.find((t) => t.name === row.name)
-  if (foundTest) return doSelectedToggle(row.name, false)
-
-  const tests = mainStore.selectedTests
+function onClickDeselect(row: ResolvedTest) {
+  const newSelections = mainStore.selectedTests
     .get(row.specPath)!
     .filter((t) => t.name !== row.name)
-  tests.length === 0
+
+  newSelections.length === 0
     ? mainStore.selectedTests.delete(row.specPath)
-    : mainStore.selectedTests.set(row.specPath, tests)
+    : mainStore.selectedTests.set(row.specPath, newSelections)
 }
 </script>
 
@@ -237,5 +265,17 @@ function doDeselected(row: ResolvedTest) {
   text-decoration: underline;
   text-underline-offset: 2px;
   font-size: 12px;
+}
+.el-table :deep(.el-table__cell) {
+  position: relative;
+}
+.row-selected {
+  position: absolute;
+  left: 0;
+  border-left: 3px solid var(--color-primary);
+  height: calc(100% - 16px);
+  top: 0;
+  bottom: 0;
+  margin: auto;
 }
 </style>

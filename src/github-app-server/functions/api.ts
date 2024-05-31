@@ -1,5 +1,8 @@
 import { Handler } from '@netlify/functions'
-import { UpdateBaselines } from '../../common/types'
+import {
+  AddBaselinesToStagedChanges,
+  UpdateBaselines
+} from '../../common/types'
 import { CiController } from '../controller'
 import { PATH_TO_SERVERLESS_FUNCTIONS } from '../../common/constants'
 
@@ -49,7 +52,30 @@ const updateReportsHandler: Handler = async (event) => {
   }
 }
 
+const addToStagedChangesHandler: Handler = async (event) => {
+  try {
+    const controller = new CiController()
+    const stagedChange = await controller.addToStagedChanges(
+      JSON.parse(event.body!) as unknown as AddBaselinesToStagedChanges
+    )
+    return {
+      statusCode: 200,
+      body: JSON.stringify(stagedChange)
+    }
+  } catch (err) {
+    console.log(err)
+    return {
+      statusCode: 400,
+      // @ts-expect-error: any
+      body: JSON.stringify({ message: err.message ?? err })
+    }
+  }
+}
+
 export const handler = redirectRoutes({
+  '/api/reports/staged': {
+    POST: addToStagedChangesHandler
+  },
   '/api/reports': {
     GET: getReportsHandler,
     PATCH: updateReportsHandler
