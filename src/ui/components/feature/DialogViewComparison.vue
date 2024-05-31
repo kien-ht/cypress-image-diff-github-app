@@ -59,21 +59,21 @@
 
       <template v-if="currentTest?.diffDataUrl">
         <el-button
-          v-if="hasAddedToApprovalList"
+          v-if="mainStore.selectedTestsFlattenMap.get(currentTest.baselinePath)"
           type="danger"
-          @click="onClickUpdate(false)"
+          @click="onClickToggleSelect"
         >
           <BaseIcon name="minus" />
-          <span style="margin-left: 4px">Remove From Approval List</span>
+          <span style="margin-left: 4px">Deselect</span>
         </el-button>
 
         <el-button
           v-else
           type="success"
-          @click="onClickUpdate(true)"
+          @click="onClickToggleSelect"
         >
           <BaseIcon name="plus" />
-          <span style="margin-left: 4px">Add To Approval List</span>
+          <span style="margin-left: 4px">Select</span>
         </el-button>
       </template>
     </div>
@@ -100,7 +100,7 @@ interface TabItem {
 }
 
 const emit = defineEmits<{
-  selected: [test: ResolvedTest, toAdd: boolean]
+  'selection-toggled': [test: ResolvedTest]
 }>()
 
 const mainStore = useMainStore()
@@ -132,18 +132,14 @@ const tabItems: ComputedRef<TabItem[]> = computed(() => [
   }
 ])
 
-const hasAddedToApprovalList = computed(() =>
-  mainStore.selectedTestsFlatten.find((s) => s === currentTest.value)
-)
-
 function open(test: ResolvedTest) {
   isVisible.value = true
   currentTest.value = test
   currentMode.value = 'carousel'
 }
 
-function onClickUpdate(toAdd: boolean) {
-  emit('selected', currentTest.value!, toAdd)
+function onClickToggleSelect() {
+  emit('selection-toggled', currentTest.value!)
   isVisible.value = false
 }
 

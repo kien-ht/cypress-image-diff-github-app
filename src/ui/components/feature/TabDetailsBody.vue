@@ -147,7 +147,7 @@
 
   <DialogViewComparison
     ref="dialogViewComparisonRef"
-    @selected="doSelected"
+    @selection-toggled="doSelectionToggled"
   />
 
   <DialogApprovalList
@@ -185,7 +185,7 @@ const suite = computed(() => {
   return mainStore.displayReport?.suites.find((s) => s.id === props.suiteId)
 })
 
-async function doSelected(row: ResolvedTest) {
+async function doSelectionToggled(row: ResolvedTest) {
   const foundTest = mainStore.selectedTestsFlattenMap.get(row.baselinePath)
   foundTest ? onClickDeselect(foundTest) : await onClickSelect(row)
 }
