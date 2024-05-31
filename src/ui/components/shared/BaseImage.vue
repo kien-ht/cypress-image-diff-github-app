@@ -1,10 +1,12 @@
 <template>
   <div>
-    <img
+    <el-image
       class="image"
       :draggable="false"
       v-if="props.src"
       :src="props.src"
+      loading="lazy"
+      lazy
     />
 
     <slot

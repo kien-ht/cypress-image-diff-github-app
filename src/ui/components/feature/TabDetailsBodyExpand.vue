@@ -90,7 +90,7 @@ function versionizePath(path: string): string {
   justify-content: center;
   color: var(--color-text-muted);
 
-  max-height: 20rem;
+  height: 20rem;
 }
 
 .cell-shadow > :deep(.image) {
