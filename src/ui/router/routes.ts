@@ -12,6 +12,11 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/PageGithubLogin.vue')
   },
   {
+    path: '/user',
+    name: 'PageUser',
+    component: () => import('@/pages/PageUser.vue')
+  },
+  {
     path: '/details',
     name: 'PageDetails',
     component: () => import('@/pages/PageDetails.vue')

@@ -27,6 +27,7 @@
   "license": "MIT",
   "dependencies": {
     "@probot/adapter-aws-lambda-serverless": "^3.0.4",
+    "aws-sdk": "^2.1631.0",
     "dayjs": "^1.11.11",
     "element-plus": "^2.6.0",
     "fs-extra": "^11.1.1",
