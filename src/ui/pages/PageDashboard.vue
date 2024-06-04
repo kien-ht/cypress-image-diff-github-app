@@ -6,7 +6,12 @@
       "
       class="el-menu-vertical-demo box-shadow-regular"
       @select="
-        (e) => $router.push({ name: 'PageDashboard', query: { menuItem: e } })
+        (e) =>
+          $router.push({
+            name: 'PageDashboard',
+            query: { menuItem: e },
+            replace: true
+          })
       "
     >
       <el-menu-item :index="DashboardMenu.Projects">
@@ -22,11 +27,28 @@
         <span>General Settings</span>
       </el-menu-item>
     </el-menu>
+
+    <div>
+      <component :is="map[route.query.menuItem as DashboardMenu]" />
+    </div>
   </main>
 </template>
 
 <script lang="ts" setup>
+import { useRoute } from 'vue-router'
+
 import { DashboardMenu } from '@/constants'
+import DashboardMenuProjects from '@/components/feature/DashboardMenuProjects.vue'
+import DashboardMenuUser from '@/components/feature/DashboardMenuUser.vue'
+import DashboardMenuSettings from '@/components/feature/DashboardMenuSettings.vue'
+
+const route = useRoute()
+
+const map: Record<DashboardMenu, Component> = {
+  [DashboardMenu.Projects]: DashboardMenuProjects,
+  [DashboardMenu.User]: DashboardMenuUser,
+  [DashboardMenu.Settings]: DashboardMenuSettings
+}
 </script>
 
 <style scoped>

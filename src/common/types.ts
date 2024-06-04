@@ -181,3 +181,11 @@ export type GithubCommitState = 'error' | 'success' | 'failure' | 'pending'
 export interface PublicConfig {
   clientId: string
 }
+
+export interface User {
+  name: string
+  githubUrl: string
+  githubAvatar: string
+  uid: string
+  createdAt: string
+}

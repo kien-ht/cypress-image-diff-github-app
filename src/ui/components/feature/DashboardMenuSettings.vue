@@ -6,7 +6,7 @@
     </p>
 
     <h3 class="title">Theme</h3>
-    <p>Choose how Cypress Image Diff Html Report looks to you.</p>
+    <p>Choose how Cypress Image Diff looks to you.</p>
 
     <RadioWithThumbnail
       :options="themeOptions"
@@ -54,7 +54,7 @@ const themeOptions: RadioWithThumbnailOption<AppTheme>[] = [
 .wrapper {
   display: grid;
   gap: 1rem;
-  margin: 0 16.66%;
+  margin: 0 15%;
   padding: 0 3rem 3rem 3rem;
   border: 1px solid var(--color-border);
   border-radius: 1rem;
