@@ -4,6 +4,95 @@
       v-loading="mainStore.isLoadingReport"
       class="general-wrapper"
     >
+      <el-skeleton
+        :loading="mainStore.isLoadingReport"
+        animated
+      >
+        <template #template>
+          <el-skeleton style="--el-skeleton-circle-size: 120px">
+            <template #template>
+              <el-skeleton-item
+                variant="circle"
+                style="margin: 1rem auto; display: block"
+              />
+            </template>
+          </el-skeleton>
+
+          <el-skeleton-item
+            variant="text"
+            style="width: 70%"
+          />
+          <el-skeleton-item variant="text" />
+        </template>
+
+        <template v-if="mainStore.report">
+          <h4>Overview</h4>
+
+          <div class="general-wrapper__cell">
+            <el-progress
+              type="dashboard"
+              :percentage="passPercentage"
+              :color="[
+                { color: 'var(--color-danger)', percentage: 50 },
+                { color: 'var(--color-warning)', percentage: 90 },
+                { color: 'var(--color-success)', percentage: 100 }
+              ]"
+              :width="120"
+              class="circular-progress"
+            >
+              <span>{{ passPercentage.toFixed() }}%</span>
+
+              <span style="color: var(--color-primary)">
+                {{ mainStore.report.total }}
+                <template v-if="mainStore.report.total === 1">Test</template>
+                <template v-else>Tests</template>
+              </span>
+            </el-progress>
+          </div>
+
+          <div class="general-wrapper__cell overview">
+            <div
+              class="progress-bar"
+              style="color: var(--color-success)"
+            >
+              <span style="width: 80px; font-weight: bold">
+                {{ mainStore.report.totalPassed }}
+                <template v-if="mainStore.report.totalPassed === 1">
+                  Pass
+                </template>
+                <template v-else>Passes</template>
+              </span>
+
+              <el-progress
+                class="custom-el-progress-reverse"
+                :percentage="passPercentage"
+                :show-text="false"
+                color="var(--color-success)"
+              />
+            </div>
+            <div
+              class="progress-bar"
+              style="color: var(--color-danger)"
+            >
+              <span style="width: 80px; font-weight: bold">
+                {{ mainStore.report.totalFailed }}
+                <template v-if="mainStore.report.totalFailed === 1">
+                  Fail
+                </template>
+                <template v-else>Fails</template>
+              </span>
+
+              <el-progress
+                class="custom-el-progress-reverse"
+                :percentage="failPercentage"
+                :show-text="false"
+                color="var(--color-danger)"
+              />
+            </div>
+          </div>
+        </template>
+      </el-skeleton>
+
       <template v-if="!isEmpty($route.query)">
         <h4>Github Repository</h4>
         <div class="general-wrapper__cell">
@@ -189,6 +278,17 @@ const pullRequest = computed<PullRequestInstance>(() => {
   }
 })
 
+const passPercentage = computed(() => {
+  return mainStore.report
+    ? (100 * mainStore.report.totalPassed) / mainStore.report.total
+    : 0
+})
+const failPercentage = computed(() => {
+  return mainStore.report
+    ? (100 * mainStore.report.totalFailed) / mainStore.report.total
+    : 0
+})
+
 const browserIconMap: Record<Browser, string> = {
   chrome,
   edge,
@@ -290,5 +390,30 @@ function isEmpty(obj: Record<any, any>) {
 .link-button > span {
   flex: 1 1 auto;
   text-align: center;
+}
+
+.general-wrapper__cell > .circular-progress {
+  margin: auto;
+}
+.general-wrapper__cell.overview {
+  flex-direction: column;
+}
+.el-skeleton {
+  text-align: right;
+}
+.el-progress :deep(.el-progress__text) {
+  display: grid;
+  gap: 1rem;
+}
+.el-progress :deep(.el-progress-circle__track) {
+  stroke: var(--color-background-danger-soft);
+  opacity: 0.3;
+}
+.progress-bar {
+  display: flex;
+  gap: 1rem;
+}
+.progress-bar .el-progress {
+  flex: 1 1 auto;
 }
 </style>

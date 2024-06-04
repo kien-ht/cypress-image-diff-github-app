@@ -18,8 +18,8 @@ export const routes: RouteRecordRaw[] = [
   },
   {
     path: '/details',
-    name: 'PageDetails',
-    component: () => import('@/pages/PageDetails.vue')
+    name: 'PageReportDetails',
+    component: () => import('@/pages/PageReportDetails.vue')
   },
   {
     path: '/circle-ci-setup',

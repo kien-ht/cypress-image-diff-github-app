@@ -1,0 +1,91 @@
+<template>
+  <header class="header">
+    <img
+      style="height: 4rem"
+      src="@/assets/images/cypress-image-diff-logo.png"
+    />
+
+    <h1 style="font-weight: bold">Cypress Image Diff</h1>
+  </header>
+  <!--
+  <el-breadcrumb
+    :separator-icon="ArrowRight"
+    class="breadcrumb"
+  >
+    <el-breadcrumb-item :to="{ path: '/' }">homepage</el-breadcrumb-item>
+    <el-breadcrumb-item>promotion management</el-breadcrumb-item>
+    <el-breadcrumb-item>promotion list</el-breadcrumb-item>
+    <el-breadcrumb-item>promotion detail</el-breadcrumb-item>
+  </el-breadcrumb> -->
+
+  <main class="body">
+    <ReportDetailsGeneral />
+
+    <div
+      class="body__content-wrapper"
+      ref="wrapperRef"
+    >
+      <ReportDetailsSuites @selected="doSelected" />
+
+      <ReportDetailsBody :suite-id="currentSuiteId" />
+    </div>
+  </main>
+</template>
+
+<script lang="ts" setup>
+// import { ArrowRight } from '@element-plus/icons-vue'
+import { useRoute } from 'vue-router'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+
+import { useMainStore } from '@/store'
+
+dayjs.extend(relativeTime)
+
+const mainStore = useMainStore()
+
+const route = useRoute()
+mainStore.fetchReport(route.query.artifactsUrl as string)
+
+const currentSuiteId = ref<string>()
+
+function doSelected(id: string) {
+  currentSuiteId.value = id
+}
+const wrapperRef = ref<HTMLElement>()
+
+onMounted(async () => {
+  await nextTick()
+  wrapperRef.value!.style.height =
+    window.innerHeight - wrapperRef.value!.getBoundingClientRect().top + 'px'
+})
+</script>
+
+<style scoped>
+.header {
+  padding: 2rem;
+
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.breadcrumb {
+  margin: 0 0 1rem 2rem;
+}
+
+.body {
+  border-top: 2px solid var(--color-border);
+  padding: 2rem 2rem 0 2rem;
+  flex: 1 1 0%;
+  display: flex;
+  gap: 2rem;
+}
+
+.body__content-wrapper {
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: minmax(20rem, 1fr) minmax(0, 4fr);
+  column-gap: 2rem;
+}
+</style>

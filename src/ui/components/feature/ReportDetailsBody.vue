@@ -23,7 +23,7 @@
 
     <el-table-column type="expand">
       <template #default="{ row }">
-        <TabDetailsBodyExpand
+        <ReportDetailsBodyExpand
           class="screenshot-wrapper-bg"
           :test="row"
         />

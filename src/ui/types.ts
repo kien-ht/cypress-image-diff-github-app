@@ -1,8 +1,3 @@
-export enum TabValue {
-  Details = 'Details',
-  Settings = 'Settings'
-}
-
 export type AppTheme = 'light' | 'dark' | 'system'
 
 export type StorageKey = 'theme'
