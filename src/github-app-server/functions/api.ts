@@ -1,10 +1,13 @@
 import { Handler } from '@netlify/functions'
-import {
-  AddBaselinesToStagedChanges,
-  UpdateBaselines
-} from '../../common/types'
-import { CiController } from '../controller'
+
+import { GithubController } from '../github-controller'
 import { PATH_TO_SERVERLESS_FUNCTIONS } from '../../common/constants'
+import { establishUserAccessTokenHandler } from '../handler-auth'
+import {
+  getReportsHandler,
+  addToStagedChangesHandler,
+  updateReportsHandler
+} from '../handler-protected'
 
 // Replace escaped newlines to fix this octokit bug
 // Error: secretOrPrivateKey must be an asymmetric key when using RS256
@@ -13,68 +16,9 @@ process.env.PRIVATE_KEY = process.env.PRIVATE_KEY!.replace(/\\n/g, '\n')
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
-const getReportsHandler: Handler = async (event) => {
-  try {
-    const controller = new CiController()
-    const json = await controller.getReports(
-      event.queryStringParameters?.artifactsUrl
-    )
-    return {
-      statusCode: 200,
-      body: JSON.stringify(json)
-    }
-  } catch (err) {
-    console.log(err)
-    return {
-      statusCode: 400,
-      // @ts-expect-error: any
-      body: JSON.stringify({ message: err.message ?? err })
-    }
-  }
-}
-
-const updateReportsHandler: Handler = async (event) => {
-  try {
-    const controller = new CiController()
-    await controller.updateBaselines(
-      JSON.parse(event.body!) as unknown as UpdateBaselines
-    )
-    return {
-      statusCode: 200
-    }
-  } catch (err) {
-    console.log(err)
-    return {
-      statusCode: 400,
-      // @ts-expect-error: any
-      body: JSON.stringify({ message: err.message ?? err })
-    }
-  }
-}
-
-const addToStagedChangesHandler: Handler = async (event) => {
-  try {
-    const controller = new CiController()
-    const stagedChange = await controller.addToStagedChanges(
-      JSON.parse(event.body!) as unknown as AddBaselinesToStagedChanges
-    )
-    return {
-      statusCode: 200,
-      body: JSON.stringify(stagedChange)
-    }
-  } catch (err) {
-    console.log(err)
-    return {
-      statusCode: 400,
-      // @ts-expect-error: any
-      body: JSON.stringify({ message: err.message ?? err })
-    }
-  }
-}
-
 const getPublicConfigHandler: Handler = async () => {
   try {
-    const controller = new CiController()
+    const controller = new GithubController()
     const config = controller.getPublicConfig()
     return {
       statusCode: 200,
@@ -90,44 +34,6 @@ const getPublicConfigHandler: Handler = async () => {
   }
 }
 
-const getUserAccessTokenHandler: Handler = async (event) => {
-  try {
-    const controller = new CiController()
-    const token = await controller.getUserAccessToken(
-      event.queryStringParameters!.code!
-    )
-    return {
-      statusCode: 200,
-      body: JSON.stringify(token)
-    }
-  } catch (err) {
-    console.log(err)
-    return {
-      statusCode: 400,
-      // @ts-expect-error: any
-      body: JSON.stringify({ message: err.message ?? err })
-    }
-  }
-}
-
-// const getUserHandler: Handler = async () => {
-//   try {
-//     // const controller = new CiController()
-//     // const token = await controller.getUserAccessToken()
-//     return {
-//       statusCode: 200,
-//       body: JSON.stringify(token)
-//     }
-//   } catch (err) {
-//     console.log(err)
-//     return {
-//       statusCode: 400,
-//       // @ts-expect-error: any
-//       body: JSON.stringify({ message: err.message ?? err })
-//     }
-//   }
-// }
-
 export const handler = redirectRoutes({
   '/api/reports/staged': {
     POST: addToStagedChangesHandler
@@ -140,7 +46,7 @@ export const handler = redirectRoutes({
     GET: getPublicConfigHandler
   },
   '/api/auth': {
-    GET: getUserAccessTokenHandler
+    GET: establishUserAccessTokenHandler
   }
   // '/api/user': {
   //   GET: getUserHandler

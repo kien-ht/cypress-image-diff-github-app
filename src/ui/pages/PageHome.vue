@@ -29,7 +29,7 @@
     </p>
 
     <a
-      v-if="token"
+      v-if="mainStore.hasLoggedIn"
       :href="installationUrl"
       class="link-button"
     >
@@ -55,11 +55,9 @@
 </template>
 
 <script lang="ts" setup>
-import { useStorage } from '@/hooks'
 import { useMainStore } from '@/store'
 
 const mainStore = useMainStore()
-const [token] = useStorage('token', '')
 
 const githubLoginUrl = computed(
   () =>

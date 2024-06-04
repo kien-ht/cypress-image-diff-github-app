@@ -5,7 +5,7 @@ export enum TabValue {
 
 export type AppTheme = 'light' | 'dark' | 'system'
 
-export type StorageKey = 'theme' | 'token'
+export type StorageKey = 'theme'
 
 export interface RadioWithThumbnailOption<T> {
   thumbnail: string

@@ -1,5 +1,5 @@
 <template>
-  <div></div>
+  <div>Circle CI setup</div>
 </template>
 
 <script lang="ts" setup>

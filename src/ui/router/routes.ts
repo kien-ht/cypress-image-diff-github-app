@@ -22,6 +22,11 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/PageDetails.vue')
   },
   {
+    path: '/circle-ci-setup',
+    name: 'PageCircleCiSetup',
+    component: () => import('@/pages/PageCircleCiSetup.vue')
+  },
+  {
     path: '/:pathMatch(.*)*',
     redirect: { name: 'PageHome' }
   }

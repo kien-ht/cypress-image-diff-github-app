@@ -52,23 +52,6 @@
 // import { ElMessage } from 'element-plus'
 // import { getUser } from '@/service'
 // import { useStorage } from '@/hooks'
-
-// const [, setToken] = useStorage<string>('token', '')
-// const route = useRoute()
-// const router = useRouter()
-
-// async function fetchUserAccessToken() {
-//   try {
-//     const token = await getAccessToken(route.query.code as string)
-//     setToken(token)
-//     router.push({ name: 'PageUser' })
-//   } catch (err) {
-//     ElMessage({
-//       type: 'error',
-//       message: (err as Error).message
-//     })
-//   }
-// }
 </script>
 
 <style scoped>

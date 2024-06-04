@@ -7,6 +7,7 @@ interface MainStoreState {
   isLoadingReport: boolean
   selectedTests: Map<string, TestInStagedChange[]>
   publicConfig?: PublicConfig
+  hasLoggedIn: boolean
 }
 
 export const useMainStore = defineStore('main', {
@@ -14,7 +15,8 @@ export const useMainStore = defineStore('main', {
     report: undefined,
     isLoadingReport: false,
     selectedTests: new Map<string, TestInStagedChange[]>(),
-    publicConfig: undefined
+    publicConfig: undefined,
+    hasLoggedIn: false
   }),
 
   getters: {

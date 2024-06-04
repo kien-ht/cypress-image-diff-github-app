@@ -1,25 +1,20 @@
-import AWS from 'aws-sdk'
+import { v4 as uuidv4 } from 'uuid'
 import { Handler } from '@netlify/functions'
+import { getDynamoDb } from '../dynamo-db'
 
-AWS.config.update({
-  credentials: {
-    accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY!
-  },
-  region: process.env.MY_AWS_REGION!
-})
-
-const dynamoDb = new AWS.DynamoDB.DocumentClient()
+const dynamoDb = getDynamoDb()
 
 export const handler: Handler = async () => {
   // Request body is passed in as a JSON encoded string in 'event.body'
   // const data = JSON.parse(event.body)
 
   const params = {
-    TableName: process.env.DATABASE_TABLE_NAME!,
+    TableName: process.env.DB_USERS_TABLE_NAME!,
     Item: {
-      gId: '123', // The id of the author
-      content: 'data.content', // Parsed from request body
+      uid: uuidv4(),
+      oaId: '71423573',
+      oaAvatarUrl: 'https://avatars.githubusercontent.com/u/71423573?v=4',
+      oaName: 'kien-ht',
       createdAt: new Date().toISOString()
     }
   }

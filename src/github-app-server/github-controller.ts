@@ -11,15 +11,9 @@ import {
   PublicConfig
 } from '../common/types.js'
 import { App as OctokitApp, Octokit } from 'octokit'
-import { getReportJsonWithTotalStats } from '../common/utils.js'
+import { getReportJsonWithTotalStats } from './helpers.js'
 
-interface ArtifactItem {
-  path: string
-  node_index: number
-  url: string
-}
-
-export class CiController {
+export class GithubController {
   private app: OctokitApp
 
   constructor() {
@@ -80,24 +74,6 @@ export class CiController {
   getPublicConfig(): PublicConfig {
     return { clientId: process.env.CLIENT_ID! }
   }
-
-  async getUserAccessToken(code: string): Promise<string> {
-    const body = new URLSearchParams({
-      client_id: process.env.CLIENT_ID!,
-      client_secret: process.env.CLIENT_SECRET!,
-      code
-    })
-    const response = await fetch(
-      'https://github.com/login/oauth/access_token',
-      {
-        method: 'POST',
-        body,
-        headers: { Accept: 'application/json' }
-      }
-    )
-
-    return ((await response.json()) as { access_token: string }).access_token
-  }
 }
 
 export async function downloadArtifacts(url?: string): Promise<Report> {
@@ -113,10 +89,10 @@ export async function downloadArtifacts(url?: string): Promise<Report> {
   })
   if (!response.ok) throw Error(`Can't download this artifacts url: ${url}`)
 
-  const data = (await response.json()) as { items: ArtifactItem[] }
+  const data = (await response.json()) as { items: Record<string, string>[] }
 
   if (data.items.length === 0) return Promise.reject('Not found artifacts')
-
+  console.log(data.items)
   const reportItem = data.items.find((i) => /\.json$/.test(i.path))
 
   if (!reportItem) return Promise.reject('Not found report')

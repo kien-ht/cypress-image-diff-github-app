@@ -39,12 +39,10 @@ export async function getPublicConfig(): Promise<PublicConfig> {
   }
 }
 
-export async function getAccessToken(code: string): Promise<string> {
+export async function establishUserAccess(code: string): Promise<void> {
   try {
     const response = await fetch(`/api/auth?code=${code}`)
     if (!response.ok) throw Error((await response.json()).message)
-
-    return await response.json()
   } catch (err) {
     throw Error((err as Error).message)
   }
