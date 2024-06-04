@@ -30,9 +30,9 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/PageCircleCiSetup.vue')
   },
   {
-    path: '/projects',
-    name: 'PageProjects',
-    component: () => import('@/pages/PageProjects.vue')
+    path: '/dashboard',
+    name: 'PageDashboard',
+    component: () => import('@/pages/PageDashboard.vue')
   },
   {
     path: '/:pathMatch(.*)*',

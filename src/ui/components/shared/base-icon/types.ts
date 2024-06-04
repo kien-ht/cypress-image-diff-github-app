@@ -19,3 +19,4 @@ export type SvgIcon =
   | 'version'
   | 'external-link'
   | 'code'
+  | 'user'

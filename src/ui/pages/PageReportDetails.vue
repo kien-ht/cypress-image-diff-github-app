@@ -3,7 +3,12 @@
     :separator-icon="ArrowRight"
     class="breadcrumb"
   >
-    <el-breadcrumb-item :to="{ name: 'PageProjects' }">
+    <el-breadcrumb-item
+      :to="{
+        name: 'PageDashboard',
+        query: { menuItem: DashboardMenu.Projects }
+      }"
+    >
       Projects
     </el-breadcrumb-item>
     <el-breadcrumb-item>promotion management</el-breadcrumb-item>
@@ -28,6 +33,7 @@ import { ArrowRight } from '@element-plus/icons-vue'
 import { useRoute } from 'vue-router'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
+import { DashboardMenu } from '@/constants'
 
 import { useMainStore } from '@/store'
 

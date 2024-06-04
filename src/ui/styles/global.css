@@ -103,3 +103,13 @@ a.link-button:hover {
   background-color: var(--color-primary);
   color: var(--r-white);
 }
+
+.box-shadow-regular {
+  box-shadow:
+    rgba(0, 0, 0, 0.1) 0px 10px 15px -3px,
+    rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+}
+
+:root.dark .box-shadow-regular {
+  box-shadow: rgba(38, 39, 40, 0.2) 0px 8px 16px;
+}
