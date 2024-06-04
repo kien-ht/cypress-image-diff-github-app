@@ -1,5 +1,9 @@
 export type AppTheme = 'light' | 'dark' | 'system'
 
+export type AppLayout = 'default-with-header' | 'plain'
+
+export type AppAccess = 'public' | 'private' | 'anyone'
+
 export type StorageKey = 'theme'
 
 export interface RadioWithThumbnailOption<T> {

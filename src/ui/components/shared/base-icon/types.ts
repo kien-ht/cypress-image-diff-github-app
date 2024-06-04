@@ -18,3 +18,4 @@ export type SvgIcon =
   | 'commit'
   | 'version'
   | 'external-link'
+  | 'code'

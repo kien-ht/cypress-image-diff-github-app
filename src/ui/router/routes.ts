@@ -4,6 +4,9 @@ export const routes: RouteRecordRaw[] = [
   {
     path: '/',
     name: 'PageHome',
+    meta: {
+      layout: 'plain'
+    },
     component: () => import('@/pages/PageHome.vue')
   },
   {
@@ -25,6 +28,11 @@ export const routes: RouteRecordRaw[] = [
     path: '/circle-ci-setup',
     name: 'PageCircleCiSetup',
     component: () => import('@/pages/PageCircleCiSetup.vue')
+  },
+  {
+    path: '/projects',
+    name: 'PageProjects',
+    component: () => import('@/pages/PageProjects.vue')
   },
   {
     path: '/:pathMatch(.*)*',

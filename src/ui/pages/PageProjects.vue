@@ -1,5 +1,5 @@
 <template>
-  <h1>Dashboard</h1>
+  <div>Projects</div>
 </template>
 
 <script lang="ts" setup></script>

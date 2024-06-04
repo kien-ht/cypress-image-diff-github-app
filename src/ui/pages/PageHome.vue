@@ -1,11 +1,6 @@
 <template>
   <main class="main-wrapper">
-    <img
-      style="height: 12rem"
-      src="@/assets/images/cypress-image-diff-logo.png"
-    />
-
-    <h1 style="font-weight: bold">Cypress Image Diff HTML Report</h1>
+    <h1 style="font-weight: bold">Cypress Image Diff</h1>
 
     <p>
       An intuitive HTML report that provides a comprehensive overview of visual
@@ -45,13 +40,6 @@
       <span>Login With Github</span>
     </a>
   </main>
-
-  <footer class="footer">
-    <a href="https://github.com/uktrade/cypress-image-diff">
-      <img src="@/assets/images/github.png" />
-      <span>Source</span>
-    </a>
-  </footer>
 </template>
 
 <script lang="ts" setup>

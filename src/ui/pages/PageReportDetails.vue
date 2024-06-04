@@ -1,22 +1,13 @@
 <template>
-  <header class="header">
-    <img
-      style="height: 4rem"
-      src="@/assets/images/cypress-image-diff-logo.png"
-    />
-
-    <h1 style="font-weight: bold">Cypress Image Diff</h1>
-  </header>
-  <!--
   <el-breadcrumb
     :separator-icon="ArrowRight"
     class="breadcrumb"
   >
-    <el-breadcrumb-item :to="{ path: '/' }">homepage</el-breadcrumb-item>
+    <el-breadcrumb-item :to="{ name: 'PageProjects' }">
+      Projects
+    </el-breadcrumb-item>
     <el-breadcrumb-item>promotion management</el-breadcrumb-item>
-    <el-breadcrumb-item>promotion list</el-breadcrumb-item>
-    <el-breadcrumb-item>promotion detail</el-breadcrumb-item>
-  </el-breadcrumb> -->
+  </el-breadcrumb>
 
   <main class="body">
     <ReportDetailsGeneral />
@@ -33,7 +24,7 @@
 </template>
 
 <script lang="ts" setup>
-// import { ArrowRight } from '@element-plus/icons-vue'
+import { ArrowRight } from '@element-plus/icons-vue'
 import { useRoute } from 'vue-router'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -62,20 +53,11 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.header {
-  padding: 2rem;
-
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-}
-
-.breadcrumb {
-  margin: 0 0 1rem 2rem;
+.el-breadcrumb.breadcrumb {
+  margin: 1.5rem 2rem 0 2rem;
 }
 
 .body {
-  border-top: 2px solid var(--color-border);
   padding: 2rem 2rem 0 2rem;
   flex: 1 1 0%;
   display: flex;
