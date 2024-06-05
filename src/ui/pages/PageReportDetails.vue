@@ -31,13 +31,9 @@
 <script lang="ts" setup>
 import { ArrowRight } from '@element-plus/icons-vue'
 import { useRoute } from 'vue-router'
-import dayjs from 'dayjs'
-import relativeTime from 'dayjs/plugin/relativeTime'
 import { DashboardMenu } from '@/constants'
 
 import { useMainStore } from '@/store'
-
-dayjs.extend(relativeTime)
 
 const mainStore = useMainStore()
 

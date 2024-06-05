@@ -189,3 +189,23 @@ export interface User {
   uid: string
   createdAt: string
 }
+
+export interface Project {
+  id: string
+  repositoryId: number
+  owner: string
+  name: string
+  description: string
+  url: string
+  settings: ProjectSetting
+}
+
+export interface ProjectSetting {
+  envs: EnvironmentVariable[]
+}
+
+export interface EnvironmentVariable {
+  value: string
+  key: string
+  createdAt: string
+}
