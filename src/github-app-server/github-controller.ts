@@ -12,6 +12,7 @@ import {
 } from '../common/types.js'
 import { App as OctokitApp, Octokit } from 'octokit'
 import { getReportJsonWithTotalStats } from './helpers.js'
+import { GITHUB_APP_NAME } from '../common/constants.js'
 
 export class GithubController {
   private app: OctokitApp
@@ -47,7 +48,7 @@ export class GithubController {
     const { data: commitData } = await octokit.rest.git.createCommit({
       owner,
       repo,
-      message: 'test: cypress-image-diff - update baselines',
+      message: `test(${GITHUB_APP_NAME}): update baselines`,
       tree: data.sha,
       parents: [sha]
     })
