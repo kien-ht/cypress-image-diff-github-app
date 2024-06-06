@@ -14,6 +14,10 @@
           })
       "
     >
+      <el-menu-item :index="DashboardMenu.Pipelines">
+        <BaseIcon name="pipeline" />
+        <span>Pipelines</span>
+      </el-menu-item>
       <el-menu-item :index="DashboardMenu.Projects">
         <BaseIcon name="task" />
         <span>Projects</span>
@@ -38,6 +42,7 @@
 import { useRoute } from 'vue-router'
 
 import { DashboardMenu } from '@/constants'
+import DashboardMenuPipelines from '@/components/feature/DashboardMenuPipelines.vue'
 import DashboardMenuProjects from '@/components/feature/DashboardMenuProjects.vue'
 import DashboardMenuUser from '@/components/feature/DashboardMenuUser.vue'
 import DashboardMenuSettings from '@/components/feature/DashboardMenuSettings.vue'
@@ -45,6 +50,7 @@ import DashboardMenuSettings from '@/components/feature/DashboardMenuSettings.vu
 const route = useRoute()
 
 const map: Record<DashboardMenu, Component> = {
+  [DashboardMenu.Pipelines]: DashboardMenuPipelines,
   [DashboardMenu.Projects]: DashboardMenuProjects,
   [DashboardMenu.User]: DashboardMenuUser,
   [DashboardMenu.Settings]: DashboardMenuSettings
@@ -58,6 +64,7 @@ main.main-wrapper {
   font-size: 16px;
   flex: 1 1 auto;
   padding: 2rem;
+  gap: 2rem;
 }
 .el-menu {
   background-color: var(--color-background-el);

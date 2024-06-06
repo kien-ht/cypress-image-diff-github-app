@@ -70,7 +70,7 @@
 
   --color-heading: var(--r-text-dark-1);
   --color-text: var(--r-text-dark-2);
-  /* --color-text-muted: var(--r-black-mute-3); */
+  --color-text-muted: var(--r-black-mute-3);
   --color-text-secondary: var(--r-white-mute-2);
 
   --el-color-primary: #8276c9;

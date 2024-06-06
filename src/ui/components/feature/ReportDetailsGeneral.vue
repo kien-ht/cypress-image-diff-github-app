@@ -53,7 +53,11 @@
           <div class="general-wrapper__cell overview">
             <div
               class="progress-bar"
-              style="color: var(--color-success)"
+              :style="{
+                color: mainStore.report.totalPassed
+                  ? 'var(--color-success)'
+                  : 'var(--color-text-secondary)'
+              }"
             >
               <span style="width: 80px; font-weight: bold">
                 {{ mainStore.report.totalPassed }}
@@ -72,7 +76,11 @@
             </div>
             <div
               class="progress-bar"
-              style="color: var(--color-danger)"
+              :style="{
+                color: mainStore.report.totalFailed
+                  ? 'var(--color-danger)'
+                  : 'var(--color-text-secondary)'
+              }"
             >
               <span style="width: 80px; font-weight: bold">
                 {{ mainStore.report.totalFailed }}

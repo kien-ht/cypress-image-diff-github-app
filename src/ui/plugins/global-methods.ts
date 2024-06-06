@@ -25,9 +25,9 @@ export function formatDateTime(
   if (!dayjs(date).isValid()) return ''
 
   const patternMap: Record<FormatDateTimeType, string> = {
-    datetime: `YYYY-MM-DD\nHH:mm:ss`,
-    date: 'YYYY-MM-DD',
-    time: 'HH:mm'
+    datetime: `MMM DD, YYYY\nhh:mm A`,
+    date: 'MMM DD, YYYY',
+    time: 'hh:mm A'
   }
   return dayjs(date).format(patternMap[type])
 }

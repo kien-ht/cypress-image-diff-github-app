@@ -65,7 +65,7 @@
               plain
               @click="submitForm"
             >
-              Create
+              Add
             </el-button>
           </el-form-item>
         </el-form>
@@ -74,6 +74,7 @@
           size="large"
           :data="updatedEnvs"
           :row-key="(row: EnvironmentVariable) => row.key"
+          class="box-shadow-regular"
         >
           <el-table-column
             type="index"
@@ -112,7 +113,7 @@
           </el-table-column>
         </el-table>
 
-        <div style="flex: 1 1 auto"></div>
+        <div style="flex: 1 1 auto" />
 
         <el-button
           type="primary"

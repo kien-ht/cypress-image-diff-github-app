@@ -20,3 +20,8 @@ export interface Screenshot {
   type: ScreenshotType
   url: string
 }
+
+export interface SelectOption<T> {
+  label: string
+  value: T
+}

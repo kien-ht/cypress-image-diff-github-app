@@ -145,6 +145,8 @@ function doSavedSettings(project: Project) {
 .wrapper > .el-table {
   margin-top: 2rem;
   border-radius: 1rem;
+
+  --el-table-header-bg-color: var(--color-background-mute);
 }
 .link-button {
   place-self: start;

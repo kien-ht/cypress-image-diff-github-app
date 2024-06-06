@@ -136,6 +136,20 @@ export interface DetailsUrlQuery extends WorkflowInstance {
   artifactsUrl?: string
 }
 
+export interface Pipeline extends DetailsUrlQuery {
+  id: string
+  commitMessage: string
+  createdAt: string
+  total: number
+  totalFailed: number
+  totalPassed: number
+}
+
+export interface PipelineFilter {
+  repo?: string
+  branch?: string
+}
+
 export interface DownloadArtifactsOptions {
   owner: string
   repo: string

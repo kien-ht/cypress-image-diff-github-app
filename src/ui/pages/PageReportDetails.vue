@@ -6,10 +6,10 @@
     <el-breadcrumb-item
       :to="{
         name: 'PageDashboard',
-        query: { menuItem: DashboardMenu.Projects }
+        query: { menuItem: DashboardMenu.Pipelines }
       }"
     >
-      Projects
+      All Pipelines
     </el-breadcrumb-item>
     <el-breadcrumb-item>promotion management</el-breadcrumb-item>
   </el-breadcrumb>
