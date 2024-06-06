@@ -24,28 +24,39 @@ export function getReportJsonWithTotalStats(json: Report): ResolvedReport {
 
 export async function getArtifactsUrl(targetUrl: string): Promise<string> {
   // targetUrl example: https://app.circleci.com/pipelines/circleci/UhkTUvo4ZbS7cgD3wDqaei/GbDbvf1J4wtqsiRrp5B19N/31/workflows/3817fa0d-8311-4334-a226-68fa14f83b56
-  const workflowId = targetUrl.split('/').pop()
+  const [vcsType, userName, project, buildNum] = targetUrl
+    .replace('https://app.circleci.com/pipelines/', '')
+    .split('/')
 
-  const response = await fetch(
-    `https://circleci.com/api/v2/workflow/${workflowId}/job`,
-    {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        'Circle-Token':
-          'CCIPAT_7NPK5NbZX7s7SbnUjm7rsM_faf5d5c3bc1924ac33926837cbe36c9c683fc287'
-      }
-    }
-  )
-  if (!response.ok)
-    throw Error(`There was a problem while fetching workflow id: ${workflowId}`)
-
-  const data = (await response.json()) as { items: Record<string, string>[] }
-  // There should be only one job inside this workflow
-  const { project_slug, job_number } = data.items[0]
-
-  return `https://circleci.com/api/v2/project/${project_slug}/${job_number}/artifacts`
+  return `https://circleci.com/api/v1.1/project/${vcsType}/${userName}/${project}/${buildNum}/artifacts`
 }
+
+// This getArtifactsUrl function below is for CircleCI API v2
+// It is recommended to use v2, however, at the time of development, project token is not available in v2, until then, we use getArtifactsUrl() above
+// export async function getArtifactsUrl(targetUrl: string): Promise<string> {
+//   // targetUrl example: https://app.circleci.com/pipelines/circleci/UhkTUvo4ZbS7cgD3wDqaei/GbDbvf1J4wtqsiRrp5B19N/31/workflows/3817fa0d-8311-4334-a226-68fa14f83b56
+//   const workflowId = targetUrl.split('/').pop()
+
+//   const response = await fetch(
+//     `https://circleci.com/api/v2/workflow/${workflowId}/job`,
+//     {
+//       headers: {
+//         'Content-Type': 'application/json',
+//         Accept: 'application/json',
+//         'Circle-Token':
+//           'CCIPAT_7NPK5NbZX7s7SbnUjm7rsM_faf5d5c3bc1924ac33926837cbe36c9c683fc287'
+//       }
+//     }
+//   )
+//   if (!response.ok)
+//     throw Error(`There was a problem while fetching workflow id: ${workflowId}`)
+
+//   const data = (await response.json()) as { items: Record<string, string>[] }
+//   // There should be only one job inside this workflow
+//   const { project_slug, job_number } = data.items[0]
+
+//   return `https://circleci.com/api/v2/project/${project_slug}/${job_number}/artifacts`
+// }
 
 export function encrypt(text: string) {
   const algorithm = 'aes-256-ctr'
@@ -69,3 +80,8 @@ export function decrypt(hash: string) {
   ])
   return decrypted.toString()
 }
+
+// curl https://circleci.com/api/v1.1/project/:vcs-type/:username/:project/:build_num/artifacts -H "Circle-Token: <circle-token>"
+
+// curl https://circleci.com/api/v1.1/project/circleci/UhkTUvo4ZbS7cgD3wDqaei/GbDbvf1J4wtqsiRrp5B19N/31/artifacts -H "Circle-Token: $CIRCLE_CI_TOKEN"
+// https://app.circleci.com/pipelines/circleci/UhkTUvo4ZbS7cgD3wDqaei/GbDbvf1J4wtqsiRrp5B19N/31/workflows/3817fa0d-8311-4334-a226-68fa14f83b56

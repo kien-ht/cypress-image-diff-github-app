@@ -85,21 +85,24 @@ export async function downloadArtifacts(url?: string): Promise<Report> {
       'Content-Type': 'application/json',
       Accept: 'application/json',
       'Circle-Token':
-        'CCIPAT_7NPK5NbZX7s7SbnUjm7rsM_faf5d5c3bc1924ac33926837cbe36c9c683fc287'
+        'CCIPRJ_3JfGq9Y94DympumSqQbBke_854042d0b855db02414e08fcf557dd22e9689a2d'
+      // 'CCIPAT_7NPK5NbZX7s7SbnUjm7rsM_faf5d5c3bc1924ac33926837cbe36c9c683fc287'
     }
   })
   if (!response.ok) throw Error(`Can't download this artifacts url: ${url}`)
 
-  const data = (await response.json()) as { items: Record<string, string>[] }
+  // This is for CircleCI v2 schema response
+  // const data = (await response.json()) as { items: Record<string, string>[] }
+  // const artifacts = data.items
+  const artifacts = (await response.json()) as Record<string, string>[]
 
-  if (data.items.length === 0) return Promise.reject('Not found artifacts')
-  console.log(data.items)
-  const reportItem = data.items.find((i) => /\.json$/.test(i.path))
+  if (artifacts.length === 0) return Promise.reject('Not found artifacts')
+  const reportItem = artifacts.find((i) => /\.json$/.test(i.path))
 
   if (!reportItem) return Promise.reject('Not found report')
 
   const report = (await (await fetch(reportItem.url)).json()) as Report
-  const urlMap = data.items.reduce(
+  const urlMap = artifacts.reduce(
     (map, item) => {
       map[item.path] = item.url
       return map
