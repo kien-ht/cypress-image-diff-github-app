@@ -86,10 +86,10 @@ export async function downloadArtifacts(url?: string): Promise<Report> {
       Accept: 'application/json',
       'Circle-Token':
         'CCIPRJ_3JfGq9Y94DympumSqQbBke_854042d0b855db02414e08fcf557dd22e9689a2d'
-      // 'CCIPAT_7NPK5NbZX7s7SbnUjm7rsM_faf5d5c3bc1924ac33926837cbe36c9c683fc287'
     }
   })
   if (!response.ok) throw Error(`Can't download this artifacts url: ${url}`)
+  console.log(url, '==url')
 
   // This is for CircleCI v2 schema response
   // const data = (await response.json()) as { items: Record<string, string>[] }

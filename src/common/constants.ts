@@ -16,6 +16,8 @@ export const DEFAULT_CONFIG: UserConfig = {
 
 export const GITHUB_APP_NAME = 'cypress-image-diff'
 
-export const CIRCLE_CI_CONTEXT_NAME = 'ci/circleci: visual-test'
+export const CIRCLE_CI_JOB_NAME = 'visual-test'
+
+export const CIRCLE_CI_CONTEXT_NAME = `ci/circleci: ${CIRCLE_CI_JOB_NAME}`
 
 export const PATH_TO_SERVERLESS_FUNCTIONS = '/.netlify/functions'

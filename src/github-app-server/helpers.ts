@@ -24,11 +24,30 @@ export function getReportJsonWithTotalStats(json: Report): ResolvedReport {
 
 export async function getArtifactsUrl(targetUrl: string): Promise<string> {
   // targetUrl example: https://app.circleci.com/pipelines/circleci/UhkTUvo4ZbS7cgD3wDqaei/GbDbvf1J4wtqsiRrp5B19N/31/workflows/3817fa0d-8311-4334-a226-68fa14f83b56
-  const [vcsType, userName, project, buildNum] = targetUrl
+  const [vcsType, userName, project, , , workflowId] = targetUrl
     .replace('https://app.circleci.com/pipelines/', '')
     .split('/')
 
-  return `https://circleci.com/api/v1.1/project/${vcsType}/${userName}/${project}/${buildNum}/artifacts`
+  const response = await fetch(
+    `https://circleci.com/api/v1.1/project/${vcsType}/${userName}/${project}?limit=5&filter=completed`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'Circle-Token':
+          'CCIPRJ_3JfGq9Y94DympumSqQbBke_854042d0b855db02414e08fcf557dd22e9689a2d'
+      }
+    }
+  )
+  if (!response.ok) throw Error('There was a problem while fetching CI jobs')
+
+  const data = (await response.json()) as {
+    workflows: Record<string, string>
+    build_num: number
+  }[]
+  const foundJob = data.find((d) => d.workflows.workflow_id === workflowId)!
+
+  return `https://circleci.com/api/v1.1/project/${vcsType}/${userName}/${project}/${foundJob.build_num}/artifacts`
 }
 
 // This getArtifactsUrl function below is for CircleCI API v2
@@ -83,5 +102,5 @@ export function decrypt(hash: string) {
 
 // curl https://circleci.com/api/v1.1/project/:vcs-type/:username/:project/:build_num/artifacts -H "Circle-Token: <circle-token>"
 
-// curl https://circleci.com/api/v1.1/project/circleci/UhkTUvo4ZbS7cgD3wDqaei/GbDbvf1J4wtqsiRrp5B19N/31/artifacts -H "Circle-Token: $CIRCLE_CI_TOKEN"
+// curl "https://circleci.com/api/v1.1/project/circleci/UhkTUvo4ZbS7cgD3wDqaei/GbDbvf1J4wtqsiRrp5B19N?limit=5&filter=completed" -H "Circle-Token: $CIRCLE_CI_TOKEN"
 // https://app.circleci.com/pipelines/circleci/UhkTUvo4ZbS7cgD3wDqaei/GbDbvf1J4wtqsiRrp5B19N/31/workflows/3817fa0d-8311-4334-a226-68fa14f83b56

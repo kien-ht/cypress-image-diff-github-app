@@ -111,5 +111,5 @@ a.link-button:hover {
 }
 
 :root.dark .box-shadow-regular {
-  box-shadow: rgba(38, 39, 40, 0.2) 0px 8px 16px;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5);
 }
