@@ -7,27 +7,18 @@
 
     <h1 style="font-weight: bold; flex: 1 1 auto">Cypress Image Diff</h1>
 
-    <template v-if="$route.name !== 'PageDashboard'">
-      <router-link
-        v-if="mainStore.hasLoggedIn"
-        :to="{ name: 'PageDashboard', query: { menuItem: DashboardMenu.User } }"
-        class="user-profile"
-      >
-        <span>{{ mainStore.user?.name }}</span>
-        <el-avatar
-          :size="40"
-          :src="mainStore.user?.githubAvatar"
-        />
-      </router-link>
-      <router-link
-        v-else
-        :to="{ name: 'PageHome' }"
-      >
-        Sign In
-      </router-link>
-    </template>
+    <router-link
+      v-if="$route.name !== 'PageDashboard'"
+      :to="{ name: 'PageDashboard', query: { menuItem: DashboardMenu.User } }"
+      class="user-profile"
+    >
+      <span>{{ mainStore.user?.name }}</span>
+      <el-avatar
+        :size="40"
+        :src="mainStore.user?.githubAvatar"
+      />
+    </router-link>
   </header>
-
   <slot></slot>
 </template>
 

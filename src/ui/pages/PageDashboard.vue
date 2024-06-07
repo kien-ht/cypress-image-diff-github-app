@@ -14,7 +14,10 @@
           })
       "
     >
-      <el-menu-item :index="DashboardMenu.Pipelines">
+      <el-menu-item
+        :disabled="mainStore.projects.length === 0"
+        :index="DashboardMenu.Pipelines"
+      >
         <BaseIcon name="pipeline" />
         <span>Pipelines</span>
       </el-menu-item>
@@ -41,6 +44,7 @@
 <script lang="ts" setup>
 import { useRoute } from 'vue-router'
 
+import { useMainStore } from '@/store'
 import { DashboardMenu } from '@/constants'
 import DashboardMenuPipelines from '@/components/feature/DashboardMenuPipelines.vue'
 import DashboardMenuProjects from '@/components/feature/DashboardMenuProjects.vue'
@@ -48,6 +52,8 @@ import DashboardMenuUser from '@/components/feature/DashboardMenuUser.vue'
 import DashboardMenuSettings from '@/components/feature/DashboardMenuSettings.vue'
 
 const route = useRoute()
+const mainStore = useMainStore()
+mainStore.fetchProjects()
 
 const map: Record<DashboardMenu, Component> = {
   [DashboardMenu.Pipelines]: DashboardMenuPipelines,

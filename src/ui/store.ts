@@ -4,8 +4,14 @@ import {
   TestInStagedChange,
   ResolvedReport,
   PublicConfig,
-  User
+  User,
+  Project
 } from '@commonTypes'
+
+export interface SetStateOptions {
+  replace?: boolean
+  throwError?: boolean
+}
 
 interface MainStoreState {
   report?: ResolvedReport
@@ -14,6 +20,7 @@ interface MainStoreState {
   publicConfig?: PublicConfig
   hasLoggedIn: boolean
   user?: User
+  projects: Project[]
 }
 
 export const useMainStore = defineStore('main', {
@@ -23,7 +30,8 @@ export const useMainStore = defineStore('main', {
     selectedTests: new Map<string, TestInStagedChange[]>(),
     publicConfig: undefined,
     hasLoggedIn: false,
-    user: undefined
+    user: undefined,
+    projects: []
   }),
 
   getters: {
@@ -72,6 +80,57 @@ export const useMainStore = defineStore('main', {
       } catch (err) {
         Promise.reject(err)
       }
+    },
+
+    async fetchProjects({ replace = false }: SetStateOptions = {}) {
+      if (this.projects.length && replace === false) return
+
+      this.projects = [
+        {
+          name: 'My first project',
+          repositoryId: 312321,
+          owner: 'octokat',
+          id: '3124',
+          description: 'This is just an example',
+          url: 'https://github.com/octocat/Hello-World',
+          settings: {
+            envs: [
+              {
+                key: 'CIRCLE_CI_TEST',
+                value: 'ajcij3ioj2313912c',
+                createdAt: '2024-06-03T14:29:38.000Z'
+              },
+              {
+                key: 'CIRCLE_CI_DEMO',
+                value: 'cdsv252ethgf',
+                createdAt: '2024-06-03T17:03:19.000Z'
+              }
+            ]
+          }
+        },
+        {
+          name: 'My second project',
+          repositoryId: 123,
+          owner: 'octocat',
+          id: '123343',
+          description: 'This is just an example',
+          url: 'https://github.com/octocat/Hello-World',
+          settings: {
+            envs: [
+              {
+                key: '2_CIRCLE_CI_TEST',
+                value: '3f31fcxbvx',
+                createdAt: '2024-06-03T14:29:38.000Z'
+              },
+              {
+                key: '2_CIRCLE_CI_DEMO',
+                value: 'cdsv252efafthgf',
+                createdAt: '2024-06-03T14:29:38.000Z'
+              }
+            ]
+          }
+        }
+      ]
     }
   }
 })

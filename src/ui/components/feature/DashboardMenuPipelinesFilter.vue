@@ -7,10 +7,10 @@
       style="width: 240px"
     >
       <el-option
-        v-for="project in projects"
-        :key="project.value"
-        :label="project.label"
-        :value="project.value"
+        v-for="option in projectOptions"
+        :key="option.value"
+        :label="option.label"
+        :value="option.value"
       />
     </el-select>
 
@@ -21,10 +21,10 @@
       style="width: 240px"
     >
       <el-option
-        v-for="project in branches"
-        :key="project.value"
-        :label="project.label"
-        :value="project.value"
+        v-for="option in branchOptions"
+        :key="option.value"
+        :label="option.label"
+        :value="option.value"
       />
     </el-select>
 
@@ -49,44 +49,33 @@ import { useRoute, useRouter } from 'vue-router'
 
 import type { SelectOption } from '@/types'
 import type { PipelineFilter } from '@commonTypes'
+import { useMainStore } from '@/store'
 
 const emit = defineEmits<DashboardMenuPipelinesFilterEmits>()
 
 const route = useRoute()
 const router = useRouter()
+const mainStore = useMainStore()
+
+const branchOptions = ref<SelectOption<string>[]>([])
+const projectOptions = computed(() =>
+  mainStore.projects.map((p) => ({ label: p.name, value: p.id }))
+)
 
 const selectedFilters = reactive<PipelineFilter>({
-  repo: (route.query.repo as string) || '',
-  branch: (route.query.branch as string) || ''
+  repo: '',
+  branch: ''
 })
-
-const projects = ref<SelectOption<string>[]>([])
-const branches = ref<SelectOption<string>[]>([])
 
 init()
 
 async function init() {
-  await Promise.allSettled([fetchProjects(), fetchBranches()])
+  await Promise.allSettled([fetchBranches(), mainStore.fetchProjects()])
+  setDefaultSelection()
 }
 
-async function fetchProjects() {
-  projects.value = [
-    {
-      value: '',
-      label: 'All projects'
-    },
-    {
-      label: 'My first project',
-      value: '3124'
-    },
-    {
-      label: 'My second project',
-      value: '31232r'
-    }
-  ]
-}
 async function fetchBranches() {
-  branches.value = [
+  branchOptions.value = [
     {
       value: '',
       label: 'All branches'
@@ -125,6 +114,13 @@ function removeEmpty(source: Record<string, any>) {
     },
     {} as Record<string, any>
   )
+}
+
+function setDefaultSelection() {
+  selectedFilters.repo =
+    (route.query.repo as string) || projectOptions.value[0]?.value
+  selectedFilters.branch =
+    (route.query.branch as string) || branchOptions.value[0]?.value
 }
 </script>
 
