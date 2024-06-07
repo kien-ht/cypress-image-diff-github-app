@@ -18,7 +18,7 @@ async function init() {
   try {
     await establishUserAccess(route.query.code as string)
     mainStore.hasLoggedIn = true
-    router.push({ name: 'PageHome' })
+    router.push({ name: 'PageProjects' })
   } catch (err) {
     mainStore.hasLoggedIn = false
     ElMessage({

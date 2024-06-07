@@ -70,7 +70,7 @@
 
 <script lang="ts" setup>
 import type { Project } from '@commonTypes'
-import { GITHUB_APP_NAME } from '../../../common/constants'
+import { GITHUB_APP_NAME } from '../../common/constants'
 
 const installationUrl = `https://github.com/apps/${GITHUB_APP_NAME}/installations/new`
 

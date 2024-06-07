@@ -1,65 +1,81 @@
 <template>
-  <header class="header">
-    <img
-      style="height: 4rem"
-      src="@/assets/images/cypress-image-diff-logo.png"
-    />
+  <div class="wrapper">
+    <h2 class="title">User Profile</h2>
 
-    <h1 style="font-weight: bold">Cypress Image Diff</h1>
-  </header>
+    <div class="content">
+      <el-form
+        :model="userForm"
+        label-width="auto"
+        label-position="top"
+        size="large"
+      >
+        <el-form-item label="User Name">
+          <el-input
+            disabled
+            v-model="userForm.name"
+          />
+        </el-form-item>
 
-  <el-menu
-    default-active="2"
-    class="el-menu-vertical-demo"
-  >
-    <el-sub-menu index="1">
-      <template #title>
-        <el-icon><location /></el-icon>
-        <span>Navigator One</span>
-      </template>
-      <el-menu-item-group title="Group One">
-        <el-menu-item index="1-1">item one</el-menu-item>
-        <el-menu-item index="1-2">item two</el-menu-item>
-      </el-menu-item-group>
-      <el-menu-item-group title="Group Two">
-        <el-menu-item index="1-3">item three</el-menu-item>
-      </el-menu-item-group>
-      <el-sub-menu index="1-4">
-        <template #title>item four</template>
-        <el-menu-item index="1-4-1">item one</el-menu-item>
-      </el-sub-menu>
-    </el-sub-menu>
-    <el-menu-item index="2">
-      <el-icon><icon-menu /></el-icon>
-      <span>Navigator Two</span>
-    </el-menu-item>
-    <el-menu-item
-      index="3"
-      disabled
-    >
-      <el-icon><document /></el-icon>
-      <span>Navigator Three</span>
-    </el-menu-item>
-    <el-menu-item index="4">
-      <el-icon><setting /></el-icon>
-      <span>Navigator Four</span>
-    </el-menu-item>
-  </el-menu>
+        <el-form-item label="Github Url">
+          <el-input
+            disabled
+            v-model="userForm.githubUrl"
+          />
+        </el-form-item>
+
+        <!-- <el-form-item>
+        <el-button
+          type="primary"
+          @click="onSubmit"
+        >
+          Save
+        </el-button>
+      </el-form-item> -->
+      </el-form>
+
+      <el-avatar
+        :size="150"
+        :src="mainStore.user?.githubAvatar"
+      />
+    </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
-// import { useRoute, useRouter } from 'vue-router'
-// import { ElMessage } from 'element-plus'
-// import { getUser } from '@/service'
-// import { useStorage } from '@/hooks'
+import { useMainStore } from '@/store'
+
+const mainStore = useMainStore()
+
+const userForm = reactive({
+  name: mainStore.user?.name,
+  githubUrl: mainStore.user?.githubUrl
+})
 </script>
 
 <style scoped>
-.header {
-  padding: 2rem 2rem 0.5rem 2rem;
-
-  display: flex;
+.wrapper {
+  display: grid;
   gap: 1rem;
-  align-items: center;
+  margin: 0 15%;
+  padding: 0 3rem 3rem 3rem;
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+}
+
+.wrapper > .title {
+  margin-top: 2rem;
+  font-weight: bold;
+}
+
+.el-form {
+  flex: 1 1 auto;
+}
+
+.wrapper > .content {
+  display: flex;
+  gap: 3rem;
+}
+.el-avatar {
+  margin: 3rem;
 }
 </style>

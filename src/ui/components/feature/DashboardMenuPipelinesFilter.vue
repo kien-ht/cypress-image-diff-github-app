@@ -92,12 +92,9 @@ async function fetchBranches() {
 }
 
 function onClickSearch() {
-  emit('searched', removeEmpty(selectedFilters))
-  router.push({
-    name: route.name!,
-    query: removeEmpty({ ...route.query, ...selectedFilters }),
-    replace: true
-  })
+  const filters = removeEmpty(selectedFilters)
+  emit('searched', filters)
+  router.push({ name: route.name!, query: filters, replace: true })
 }
 
 function removeEmpty(source: Record<string, any>) {

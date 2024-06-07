@@ -3,12 +3,7 @@
     :separator-icon="ArrowRight"
     class="breadcrumb"
   >
-    <el-breadcrumb-item
-      :to="{
-        name: 'PageDashboard',
-        query: { menuItem: DashboardMenu.Pipelines }
-      }"
-    >
+    <el-breadcrumb-item :to="{ name: 'PagePipelines' }">
       All Pipelines
     </el-breadcrumb-item>
     <el-breadcrumb-item>promotion management</el-breadcrumb-item>
@@ -31,7 +26,6 @@
 <script lang="ts" setup>
 import { ArrowRight } from '@element-plus/icons-vue'
 import { useRoute } from 'vue-router'
-import { DashboardMenu } from '@/constants'
 
 import { useMainStore } from '@/store'
 

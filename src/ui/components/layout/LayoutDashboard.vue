@@ -1,18 +1,11 @@
 <template>
+  <BaseHeader />
+
   <main class="main-wrapper">
     <el-menu
-      :default-active="
-        ($route.query.menuItem as string) || DashboardMenu.Projects
-      "
+      :default-active="($route.name as string) || DashboardMenu.Projects"
       class="el-menu-vertical-demo box-shadow-regular"
-      @select="
-        (e) =>
-          $router.push({
-            name: 'PageDashboard',
-            query: { menuItem: e },
-            replace: true
-          })
-      "
+      @select="(e) => $router.push({ name: e })"
     >
       <el-menu-item
         :disabled="mainStore.projects.length === 0"
@@ -36,31 +29,17 @@
     </el-menu>
 
     <div>
-      <component :is="map[route.query.menuItem as DashboardMenu]" />
+      <slot />
     </div>
   </main>
 </template>
 
 <script lang="ts" setup>
-import { useRoute } from 'vue-router'
-
 import { useMainStore } from '@/store'
 import { DashboardMenu } from '@/constants'
-import DashboardMenuPipelines from '@/components/feature/DashboardMenuPipelines.vue'
-import DashboardMenuProjects from '@/components/feature/DashboardMenuProjects.vue'
-import DashboardMenuUser from '@/components/feature/DashboardMenuUser.vue'
-import DashboardMenuSettings from '@/components/feature/DashboardMenuSettings.vue'
 
-const route = useRoute()
 const mainStore = useMainStore()
 mainStore.fetchProjects()
-
-const map: Record<DashboardMenu, Component> = {
-  [DashboardMenu.Pipelines]: DashboardMenuPipelines,
-  [DashboardMenu.Projects]: DashboardMenuProjects,
-  [DashboardMenu.User]: DashboardMenuUser,
-  [DashboardMenu.Settings]: DashboardMenuSettings
-}
 </script>
 
 <style scoped>

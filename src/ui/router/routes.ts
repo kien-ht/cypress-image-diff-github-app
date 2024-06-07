@@ -10,14 +10,9 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/PageHome.vue')
   },
   {
-    path: '/github-login',
-    name: 'PageGithubLogin',
-    component: () => import('@/pages/PageGithubLogin.vue')
-  },
-  {
-    path: '/user',
-    name: 'PageUser',
-    component: () => import('@/pages/PageUser.vue')
+    path: '/github-oauth',
+    name: 'PageGithubSignUp',
+    component: () => import('@/pages/PageGithubSignUp.vue')
   },
   {
     path: '/details',
@@ -25,9 +20,36 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('@/pages/PageReportDetails.vue')
   },
   {
-    path: '/dashboard',
-    name: 'PageDashboard',
-    component: () => import('@/pages/PageDashboard.vue')
+    path: '/pipelines',
+    name: 'PagePipelines',
+    meta: {
+      layout: 'dashboard'
+    },
+    component: () => import('@/pages/PagePipelines.vue')
+  },
+  {
+    path: '/projects',
+    name: 'PageProjects',
+    meta: {
+      layout: 'dashboard'
+    },
+    component: () => import('@/pages/PageProjects.vue')
+  },
+  {
+    path: '/user',
+    name: 'PageUser',
+    meta: {
+      layout: 'dashboard'
+    },
+    component: () => import('@/pages/PageUser.vue')
+  },
+  {
+    path: '/general-settings',
+    name: 'PageGeneralSettings',
+    meta: {
+      layout: 'dashboard'
+    },
+    component: () => import('@/pages/PageGeneralSettings.vue')
   },
   {
     path: '/:pathMatch(.*)*',
