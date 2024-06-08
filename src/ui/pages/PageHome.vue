@@ -40,17 +40,18 @@
 
 <script lang="ts" setup>
 import { useMainStore } from '@/store'
+import { GithubAuthActionType } from '@/constants'
 
 const mainStore = useMainStore()
 
 const githubSignInUrl = computed(
   () =>
-    `https://github.com/login/oauth/authorize?client_id=${mainStore.publicConfig?.clientId}`
+    `https://github.com/login/oauth/authorize?client_id=${mainStore.publicConfig?.clientId}&state=${GithubAuthActionType.SIGN_IN}`
 )
 
 const githubSignUpUrl = computed(
   () =>
-    `https://github.com/login/oauth/authorize?client_id=${mainStore.publicConfig?.clientId}&redirect_uri=http://localhost:6867/dashboard?menuItem=projects`
+    `https://github.com/login/oauth/authorize?client_id=${mainStore.publicConfig?.clientId}&state=${GithubAuthActionType.SIGN_UP}`
 )
 </script>
 

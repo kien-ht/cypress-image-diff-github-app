@@ -197,7 +197,8 @@ export interface PublicConfig {
 }
 
 export interface User {
-  name: string
+  githubId: number
+  githubName: string
   githubUrl: string
   githubAvatar: string
   uid: string

@@ -1,4 +1,5 @@
 import crypto from 'crypto'
+import { type CookieSerializeOptions, parse, serialize } from 'cookie'
 import { Report, ResolvedReport } from '../common/types.js'
 
 export function getReportJsonWithTotalStats(json: Report): ResolvedReport {
@@ -100,7 +101,31 @@ export function decrypt(hash: string) {
   return decrypted.toString()
 }
 
-// curl https://circleci.com/api/v1.1/project/:vcs-type/:username/:project/:build_num/artifacts -H "Circle-Token: <circle-token>"
+export function generateCookie(
+  name: string,
+  value: string,
+  options: CookieSerializeOptions = {}
+): string {
+  const defaultOptions = {
+    maxAge: 60 * 60 * 24 * 30,
+    httpOnly: true,
+    sameSite: true
+  }
+  const cookie = serialize(name, value, { ...defaultOptions, ...options })
+  return cookie
+}
 
-// curl "https://circleci.com/api/v1.1/project/circleci/UhkTUvo4ZbS7cgD3wDqaei/GbDbvf1J4wtqsiRrp5B19N?limit=5&filter=completed" -H "Circle-Token: $CIRCLE_CI_TOKEN"
-// https://app.circleci.com/pipelines/circleci/UhkTUvo4ZbS7cgD3wDqaei/GbDbvf1J4wtqsiRrp5B19N/31/workflows/3817fa0d-8311-4334-a226-68fa14f83b56
+export function getCookie(
+  cookies: string = '',
+  name: string
+): string | undefined {
+  const cookie = parse(cookies)[name]
+  return cookie
+}
+
+export function setupEnvVariables() {
+  // Replace escaped newlines to fix this octokit bug
+  // Error: secretOrPrivateKey must be an asymmetric key when using RS256
+  // See more here https://github.com/octokit/auth-app.js/issues/465
+  process.env.PRIVATE_KEY = process.env.PRIVATE_KEY!.replace(/\\n/g, '\n')
+}

@@ -12,7 +12,7 @@
       :to="{ name: 'PageUser' }"
       class="user-profile"
     >
-      <span>{{ mainStore.user?.name }}</span>
+      <span>{{ mainStore.user?.githubName }}</span>
       <el-avatar
         :size="40"
         :src="mainStore.user?.githubAvatar"

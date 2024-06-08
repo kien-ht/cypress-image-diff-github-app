@@ -5,25 +5,35 @@ export const routes: RouteRecordRaw[] = [
     path: '/',
     name: 'PageHome',
     meta: {
-      layout: 'plain'
+      layout: 'two-columns',
+      access: 'public'
     },
     component: () => import('@/pages/PageHome.vue')
   },
   {
-    path: '/github-oauth',
-    name: 'PageGithubSignUp',
-    component: () => import('@/pages/PageGithubSignUp.vue')
+    path: '/github-authorized',
+    name: 'PageGithubAuthorized',
+    meta: {
+      layout: 'plain',
+      access: 'public'
+    },
+    component: () => import('@/pages/PageGithubAuthorized.vue')
   },
   {
     path: '/details',
     name: 'PageReportDetails',
+    meta: {
+      layout: 'default-with-header',
+      access: 'private'
+    },
     component: () => import('@/pages/PageReportDetails.vue')
   },
   {
     path: '/pipelines',
     name: 'PagePipelines',
     meta: {
-      layout: 'dashboard'
+      layout: 'dashboard',
+      access: 'private'
     },
     component: () => import('@/pages/PagePipelines.vue')
   },
@@ -31,7 +41,8 @@ export const routes: RouteRecordRaw[] = [
     path: '/projects',
     name: 'PageProjects',
     meta: {
-      layout: 'dashboard'
+      layout: 'dashboard',
+      access: 'private'
     },
     component: () => import('@/pages/PageProjects.vue')
   },
@@ -39,7 +50,8 @@ export const routes: RouteRecordRaw[] = [
     path: '/user',
     name: 'PageUser',
     meta: {
-      layout: 'dashboard'
+      layout: 'dashboard',
+      access: 'private'
     },
     component: () => import('@/pages/PageUser.vue')
   },
@@ -47,7 +59,8 @@ export const routes: RouteRecordRaw[] = [
     path: '/general-settings',
     name: 'PageGeneralSettings',
     meta: {
-      layout: 'dashboard'
+      layout: 'dashboard',
+      access: 'private'
     },
     component: () => import('@/pages/PageGeneralSettings.vue')
   },

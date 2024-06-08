@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getReports, getPublicConfig } from '@/service'
+import { getReports, getPublicConfig, getUser } from '@/service'
 import {
   TestInStagedChange,
   ResolvedReport,
@@ -18,7 +18,7 @@ interface MainStoreState {
   isLoadingReport: boolean
   selectedTests: Map<string, TestInStagedChange[]>
   publicConfig?: PublicConfig
-  hasLoggedIn: boolean
+  hasSignedIn: boolean
   user?: User
   projects: Project[]
 }
@@ -29,7 +29,7 @@ export const useMainStore = defineStore('main', {
     isLoadingReport: false,
     selectedTests: new Map<string, TestInStagedChange[]>(),
     publicConfig: undefined,
-    hasLoggedIn: false,
+    hasSignedIn: false,
     user: undefined,
     projects: []
   }),
@@ -79,6 +79,19 @@ export const useMainStore = defineStore('main', {
         this.publicConfig = await getPublicConfig()
       } catch (err) {
         Promise.reject(err)
+      }
+    },
+
+    async fetchUser({
+      replace = false,
+      throwError = true
+    }: SetStateOptions = {}) {
+      if (this.user && replace === false) return
+
+      try {
+        this.user = await getUser()
+      } catch (err) {
+        throwError && Promise.reject(err)
       }
     },
 

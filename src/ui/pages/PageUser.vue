@@ -47,7 +47,7 @@ import { useMainStore } from '@/store'
 const mainStore = useMainStore()
 
 const userForm = reactive({
-  name: mainStore.user?.name,
+  name: mainStore.user?.githubName,
   githubUrl: mainStore.user?.githubUrl
 })
 </script>

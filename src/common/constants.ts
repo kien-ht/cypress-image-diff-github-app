@@ -21,3 +21,5 @@ export const CIRCLE_CI_JOB_NAME = 'visual-test'
 export const CIRCLE_CI_CONTEXT_NAME = `ci/circleci: ${CIRCLE_CI_JOB_NAME}`
 
 export const PATH_TO_SERVERLESS_FUNCTIONS = '/.netlify/functions'
+
+export const USER_ACCESS_TOKEN_EXPIRATION_TIME = 30 * 24 * 60 * 60

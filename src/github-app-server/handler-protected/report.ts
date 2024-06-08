@@ -29,7 +29,7 @@ export const updateReportsHandler: Handler = async (event) => {
   try {
     const controller = new GithubController()
     await controller.updateBaselines(
-      JSON.parse(event.body!) as unknown as UpdateBaselines
+      JSON.parse(event.body ?? '{}') as unknown as UpdateBaselines
     )
     return {
       statusCode: 200
@@ -48,7 +48,7 @@ export const addToStagedChangesHandler: Handler = async (event) => {
   try {
     const controller = new GithubController()
     const stagedChange = await controller.addToStagedChanges(
-      JSON.parse(event.body!) as unknown as AddBaselinesToStagedChanges
+      JSON.parse(event.body ?? '{}') as unknown as AddBaselinesToStagedChanges
     )
     return {
       statusCode: 200,

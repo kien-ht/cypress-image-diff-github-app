@@ -1,6 +1,10 @@
 export type AppTheme = 'light' | 'dark' | 'system'
 
-export type AppLayout = 'default-with-header' | 'plain' | 'dashboard'
+export type AppLayout =
+  | 'default-with-header'
+  | 'plain'
+  | 'dashboard'
+  | 'two-columns'
 
 export type AppAccess = 'public' | 'private' | 'anyone'
 

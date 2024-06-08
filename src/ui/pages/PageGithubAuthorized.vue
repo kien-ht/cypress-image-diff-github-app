@@ -5,7 +5,7 @@
 <script lang="ts" setup>
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { establishUserAccess } from '@/service'
+import { signIn, signUp } from '@/service'
 import { useMainStore } from '@/store'
 
 const route = useRoute()
@@ -16,15 +16,24 @@ init()
 
 async function init() {
   try {
-    await establishUserAccess(route.query.code as string)
-    mainStore.hasLoggedIn = true
+    if (!route.query.code)
+      throw Error(`${route.query.error}: Authorization failed!`)
+
+    if (route.query.state === 'signIn') {
+      await signIn(route.query.code as string)
+    } else {
+      await signUp(route.query.code as string)
+    }
+
+    mainStore.hasSignedIn = true
     router.push({ name: 'PageProjects' })
   } catch (err) {
-    mainStore.hasLoggedIn = false
+    mainStore.hasSignedIn = false
     ElMessage({
       type: 'error',
       message: (err as Error).message
     })
+    router.push({ name: 'PageHome' })
   }
 }
 </script>

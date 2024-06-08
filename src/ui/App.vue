@@ -17,7 +17,7 @@ const { setTheme } = useAppTheme()
 setTheme()
 mainStore.fetchPublicConfig()
 
-const layout = computed(() => route.meta.layout ?? 'default-with-header')
+const layout = computed(() => route.meta.layout ?? 'plain')
 </script>
 
 <style scoped></style>

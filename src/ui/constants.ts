@@ -10,3 +10,8 @@ export enum DashboardMenu {
   'User' = 'PageUser',
   'Settings' = 'PageGeneralSettings'
 }
+
+export enum GithubAuthActionType {
+  'SIGN_IN' = 'signIn',
+  'SIGN_UP' = 'signUp'
+}

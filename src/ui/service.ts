@@ -3,9 +3,11 @@ import {
   AddBaselinesToStagedChanges,
   UpdateBaselines,
   HashedSnapshotToUpdate,
-  PublicConfig
+  PublicConfig,
+  User
 } from '@commonTypes'
 import { PATH_TO_SERVERLESS_FUNCTIONS } from '../common/constants'
+import { useMainStore } from '@/store'
 
 monkeyPatchWindowFetch()
 
@@ -39,10 +41,42 @@ export async function getPublicConfig(): Promise<PublicConfig> {
   }
 }
 
-export async function establishUserAccess(code: string): Promise<void> {
+export async function signIn(code: string): Promise<void> {
   try {
-    const response = await fetch(`/api/auth?code=${code}`)
+    const response = await fetch('/api/sign-in', {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
     if (!response.ok) throw Error((await response.json()).message)
+  } catch (err) {
+    throw Error((err as Error).message)
+  }
+}
+
+export async function signUp(code: string): Promise<void> {
+  try {
+    const response = await fetch('/api/sign-up', {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    if (!response.ok) throw Error((await response.json()).message)
+  } catch (err) {
+    throw Error((err as Error).message)
+  }
+}
+
+export async function getUser(): Promise<User> {
+  try {
+    const response = await fetch('/api/user')
+    if (!response.ok) throw Error((await response.json()).message)
+
+    return await response.json()
   } catch (err) {
     throw Error((err as Error).message)
   }
@@ -83,8 +117,11 @@ export async function updateBaselines(args: UpdateBaselines): Promise<void> {
 
 function monkeyPatchWindowFetch() {
   const originalFetch = window.fetch
-  window.fetch = function (url, config) {
+  window.fetch = async function (url, config) {
     const requestUrl = `${PATH_TO_SERVERLESS_FUNCTIONS}${url}`
-    return originalFetch.call(this, requestUrl, config)
+    const response = await originalFetch.call(this, requestUrl, config)
+    const mainStore = useMainStore()
+    mainStore.hasSignedIn = response.ok
+    return response
   }
 }
