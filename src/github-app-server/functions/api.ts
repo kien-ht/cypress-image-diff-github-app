@@ -11,10 +11,11 @@ import {
   getReportsHandler,
   addToStagedChangesHandler,
   updateReportsHandler,
-  getUserHandler
+  getUserHandler,
+  getProjectsHandler
 } from '../handler-protected'
 import { getPublicConfigHandler } from '../handler-public'
-import { getCookie, setupEnvVariables } from '../helpers'
+import { decrypt, getCookie, setupEnvVariables } from '../helpers'
 import { dynamoDb } from '../dynamo-db'
 
 setupEnvVariables()
@@ -66,6 +67,9 @@ export const handler = redirectRoutes(
     },
     '/api/user': {
       GET: getUserHandler
+    },
+    '/api/projects': {
+      GET: getProjectsHandler
     }
   },
   middleware
@@ -114,7 +118,7 @@ async function middleware(
 
   const userId = await dynamoDb.getUserIdByAccessToken(accessToken)
   if (userId) {
-    event.middleware = { userId }
+    event.middleware = { userId, githubAccessToken: decrypt(accessToken) }
     return next(event, context) as Promise<HandlerResponse>
   }
 

@@ -1,5 +1,6 @@
 interface MiddleWareData {
   userId: string
+  githubAccessToken: string
 }
 export interface GithubUserInfo {
   // This is a brief interface represents only what we need

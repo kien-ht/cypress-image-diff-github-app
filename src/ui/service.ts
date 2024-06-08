@@ -4,7 +4,8 @@ import {
   UpdateBaselines,
   HashedSnapshotToUpdate,
   PublicConfig,
-  User
+  User,
+  Project
 } from '@commonTypes'
 import { PATH_TO_SERVERLESS_FUNCTIONS } from '../common/constants'
 import { useMainStore } from '@/store'
@@ -33,6 +34,17 @@ export async function getReports(
 export async function getPublicConfig(): Promise<PublicConfig> {
   try {
     const response = await fetch('/api/config')
+    if (!response.ok) throw Error((await response.json()).message)
+
+    return await response.json()
+  } catch (err) {
+    throw Error((err as Error).message)
+  }
+}
+
+export async function getProjects(): Promise<Project[]> {
+  try {
+    const response = await fetch('/api/projects')
     if (!response.ok) throw Error((await response.json()).message)
 
     return await response.json()

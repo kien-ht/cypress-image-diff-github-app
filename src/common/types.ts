@@ -205,13 +205,16 @@ export interface User {
   createdAt: string
 }
 
-export interface Project {
-  id: string
+export interface GithubProject {
   repositoryId: number
   owner: string
   name: string
-  description: string
+  fullName: string
   url: string
+}
+
+export interface Project extends GithubProject {
+  id: string
   settings: ProjectSetting
 }
 

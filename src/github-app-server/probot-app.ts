@@ -1,5 +1,5 @@
 import { Probot } from 'probot'
-import { downloadArtifacts } from './github-controller.js'
+import { downloadArtifacts } from './helpers.js'
 import { GITHUB_APP_NAME, CIRCLE_CI_CONTEXT_NAME } from '../common/constants.js'
 import { DetailsUrlQuery, GithubCommitState } from '../common/types.js'
 import { getArtifactsUrl } from './helpers.js'

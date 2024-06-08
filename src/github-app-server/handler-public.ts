@@ -1,11 +1,9 @@
 import { Handler } from '@netlify/functions'
-
-import { GithubController } from './github-controller'
+import { PublicConfig } from '../common/types'
 
 export const getPublicConfigHandler: Handler = async () => {
   try {
-    const controller = new GithubController()
-    const config = controller.getPublicConfig()
+    const config: PublicConfig = { clientId: process.env.CLIENT_ID! }
     return {
       statusCode: 200,
       body: JSON.stringify(config)

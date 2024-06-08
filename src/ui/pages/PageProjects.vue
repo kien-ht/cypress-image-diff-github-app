@@ -2,7 +2,7 @@
   <div class="wrapper">
     <h2 class="title">Projects</h2>
 
-    <template v-if="projects.length">
+    <template v-if="mainStore.projects.length">
       <p>
         Here is the list of Github repositories that have installed Cypress
         Image Diff, accessible through your account. If you want to add or
@@ -18,7 +18,7 @@
 
       <el-table
         size="large"
-        :data="projects"
+        :data="mainStore.projects"
         :row-key="(row: Project) => row.id"
       >
         <el-table-column
@@ -71,55 +71,10 @@
 <script lang="ts" setup>
 import type { Project } from '@commonTypes'
 import { GITHUB_APP_NAME } from '../../common/constants'
+import { useMainStore } from '@/store'
 
+const mainStore = useMainStore()
 const installationUrl = `https://github.com/apps/${GITHUB_APP_NAME}/installations/new`
-
-const projects: Project[] = [
-  {
-    name: 'My first project',
-    repositoryId: 312321,
-    owner: 'octokat',
-    id: '3124',
-    description: 'This is just an example',
-    url: 'https://github.com/octocat/Hello-World',
-    settings: {
-      envs: [
-        {
-          key: 'CIRCLE_CI_TEST',
-          value: 'ajcij3ioj2313912c',
-          createdAt: '2024-06-03T14:29:38.000Z'
-        },
-        {
-          key: 'CIRCLE_CI_DEMO',
-          value: 'cdsv252ethgf',
-          createdAt: '2024-06-03T17:03:19.000Z'
-        }
-      ]
-    }
-  },
-  {
-    name: 'My second project',
-    repositoryId: 123,
-    owner: 'octocat',
-    id: '123343',
-    description: 'This is just an example',
-    url: 'https://github.com/octocat/Hello-World',
-    settings: {
-      envs: [
-        {
-          key: '2_CIRCLE_CI_TEST',
-          value: '3f31fcxbvx',
-          createdAt: '2024-06-03T14:29:38.000Z'
-        },
-        {
-          key: '2_CIRCLE_CI_DEMO',
-          value: 'cdsv252efafthgf',
-          createdAt: '2024-06-03T14:29:38.000Z'
-        }
-      ]
-    }
-  }
-]
 
 function doSavedSettings(project: Project) {
   // eslint-disable-next-line no-console

@@ -3,18 +3,17 @@ import fetch from 'node-fetch'
 import {
   UpdateBaselines,
   ResolvedReport,
-  Report,
   GetSnapshotsHashed,
   HashedSnapshotToUpdate,
   ProbotLogLevel,
   AddBaselinesToStagedChanges,
-  PublicConfig
+  GithubProject
 } from '../common/types.js'
 import { App as OctokitApp, Octokit } from 'octokit'
-import { getReportJsonWithTotalStats } from './helpers.js'
+import { getReportJsonWithTotalStats, downloadArtifacts } from './helpers.js'
 import { GITHUB_APP_NAME } from '../common/constants.js'
 
-export class GithubController {
+export class GithubAppController {
   private app: OctokitApp
 
   constructor() {
@@ -71,54 +70,29 @@ export class GithubController {
 
     return await getSnapshotsHash({ owner, repo, snapshot }, octokit)
   }
-
-  getPublicConfig(): PublicConfig {
-    return { clientId: process.env.CLIENT_ID! }
-  }
 }
 
-export async function downloadArtifacts(url?: string): Promise<Report> {
-  if (!url) throw Error('No artifacts url found')
+export class GithubUserController {
+  private octokit: Octokit
 
-  const response = await fetch(url, {
-    headers: {
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
-      'Circle-Token':
-        'CCIPRJ_3JfGq9Y94DympumSqQbBke_854042d0b855db02414e08fcf557dd22e9689a2d'
-    }
-  })
-  if (!response.ok) throw Error(`Can't download this artifacts url: ${url}`)
-  console.log(url, '==url')
+  constructor(token: string) {
+    this.octokit = new Octokit({ auth: token })
+  }
 
-  // This is for CircleCI v2 schema response
-  // const data = (await response.json()) as { items: Record<string, string>[] }
-  // const artifacts = data.items
-  const artifacts = (await response.json()) as Record<string, string>[]
+  async getUserProjects(installationId: number): Promise<GithubProject[]> {
+    const { data } =
+      await this.octokit.rest.apps.listInstallationReposForAuthenticatedUser({
+        installation_id: installationId,
+        // TODO: Need to do better pagination
+        per_page: 100
+      })
 
-  if (artifacts.length === 0) return Promise.reject('Not found artifacts')
-  const reportItem = artifacts.find((i) => /\.json$/.test(i.path))
-
-  if (!reportItem) return Promise.reject('Not found report')
-
-  const report = (await (await fetch(reportItem.url)).json()) as Report
-  const urlMap = artifacts.reduce(
-    (map, item) => {
-      map[item.path] = item.url
-      return map
-    },
-    {} as Record<string, string>
-  )
-  return {
-    ...report,
-    suites: report.suites.map((s) => ({
-      ...s,
-      tests: s.tests.map((t) => ({
-        ...t,
-        baselineDataUrl: urlMap[t.baselinePath],
-        diffDataUrl: urlMap[t.diffPath],
-        comparisonDataUrl: urlMap[t.comparisonPath]
-      }))
+    return data.repositories.map((r) => ({
+      repositoryId: r.id,
+      owner: r.owner.login,
+      name: r.name,
+      fullName: r.full_name,
+      url: r.html_url
     }))
   }
 }

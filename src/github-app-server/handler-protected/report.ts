@@ -3,11 +3,11 @@ import {
   AddBaselinesToStagedChanges,
   UpdateBaselines
 } from '../../common/types'
-import { GithubController } from '../github-controller'
+import { GithubAppController } from '../github-controller'
 
 export const getReportsHandler: Handler = async (event) => {
   try {
-    const controller = new GithubController()
+    const controller = new GithubAppController()
     const json = await controller.getReports(
       event.queryStringParameters?.artifactsUrl
     )
@@ -27,7 +27,7 @@ export const getReportsHandler: Handler = async (event) => {
 
 export const updateReportsHandler: Handler = async (event) => {
   try {
-    const controller = new GithubController()
+    const controller = new GithubAppController()
     await controller.updateBaselines(
       JSON.parse(event.body ?? '{}') as unknown as UpdateBaselines
     )
@@ -46,7 +46,7 @@ export const updateReportsHandler: Handler = async (event) => {
 
 export const addToStagedChangesHandler: Handler = async (event) => {
   try {
-    const controller = new GithubController()
+    const controller = new GithubAppController()
     const stagedChange = await controller.addToStagedChanges(
       JSON.parse(event.body ?? '{}') as unknown as AddBaselinesToStagedChanges
     )

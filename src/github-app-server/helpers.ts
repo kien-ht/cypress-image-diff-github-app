@@ -129,3 +129,49 @@ export function setupEnvVariables() {
   // See more here https://github.com/octokit/auth-app.js/issues/465
   process.env.PRIVATE_KEY = process.env.PRIVATE_KEY!.replace(/\\n/g, '\n')
 }
+
+export async function downloadArtifacts(url?: string): Promise<Report> {
+  if (!url) throw Error('No artifacts url found')
+
+  const response = await fetch(url, {
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'Circle-Token':
+        'CCIPRJ_3JfGq9Y94DympumSqQbBke_854042d0b855db02414e08fcf557dd22e9689a2d'
+    }
+  })
+  if (!response.ok) throw Error(`Can't download this artifacts url: ${url}`)
+  console.log(url, '==url')
+
+  // This is for CircleCI v2 schema response
+  // const data = (await response.json()) as { items: Record<string, string>[] }
+  // const artifacts = data.items
+  const artifacts = (await response.json()) as Record<string, string>[]
+
+  if (artifacts.length === 0) return Promise.reject('Not found artifacts')
+  const reportItem = artifacts.find((i) => /\.json$/.test(i.path))
+
+  if (!reportItem) return Promise.reject('Not found report')
+
+  const report = (await (await fetch(reportItem.url)).json()) as Report
+  const urlMap = artifacts.reduce(
+    (map, item) => {
+      map[item.path] = item.url
+      return map
+    },
+    {} as Record<string, string>
+  )
+  return {
+    ...report,
+    suites: report.suites.map((s) => ({
+      ...s,
+      tests: s.tests.map((t) => ({
+        ...t,
+        baselineDataUrl: urlMap[t.baselinePath],
+        diffDataUrl: urlMap[t.diffPath],
+        comparisonDataUrl: urlMap[t.comparisonPath]
+      }))
+    }))
+  }
+}

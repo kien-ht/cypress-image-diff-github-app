@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { getReports, getPublicConfig, getUser } from '@/service'
+import { getReports, getPublicConfig, getUser, getProjects } from '@/service'
 import {
   TestInStagedChange,
   ResolvedReport,
@@ -95,55 +95,17 @@ export const useMainStore = defineStore('main', {
       }
     },
 
-    async fetchProjects({ replace = false }: SetStateOptions = {}) {
+    async fetchProjects({
+      replace = false,
+      throwError = true
+    }: SetStateOptions = {}) {
       if (this.projects.length && replace === false) return
 
-      this.projects = [
-        {
-          name: 'My first project',
-          repositoryId: 312321,
-          owner: 'octokat',
-          id: '3124',
-          description: 'This is just an example',
-          url: 'https://github.com/octocat/Hello-World',
-          settings: {
-            envs: [
-              {
-                key: 'CIRCLE_CI_TEST',
-                value: 'ajcij3ioj2313912c',
-                createdAt: '2024-06-03T14:29:38.000Z'
-              },
-              {
-                key: 'CIRCLE_CI_DEMO',
-                value: 'cdsv252ethgf',
-                createdAt: '2024-06-03T17:03:19.000Z'
-              }
-            ]
-          }
-        },
-        {
-          name: 'My second project',
-          repositoryId: 123,
-          owner: 'octocat',
-          id: '123343',
-          description: 'This is just an example',
-          url: 'https://github.com/octocat/Hello-World',
-          settings: {
-            envs: [
-              {
-                key: '2_CIRCLE_CI_TEST',
-                value: '3f31fcxbvx',
-                createdAt: '2024-06-03T14:29:38.000Z'
-              },
-              {
-                key: '2_CIRCLE_CI_DEMO',
-                value: 'cdsv252efafthgf',
-                createdAt: '2024-06-03T14:29:38.000Z'
-              }
-            ]
-          }
-        }
-      ]
+      try {
+        this.projects = await getProjects()
+      } catch (err) {
+        throwError && Promise.reject(err)
+      }
     }
   }
 })
