@@ -1,3 +1,5 @@
+import type { ApiRouteAccess } from '@commonTypes'
+
 export type AppTheme = 'light' | 'dark' | 'system'
 
 export type AppLayout =
@@ -28,4 +30,8 @@ export interface Screenshot {
 export interface SelectOption<T> {
   label: string
   value: T
+}
+
+export interface CustomFetchOptions {
+  access?: ApiRouteAccess
 }

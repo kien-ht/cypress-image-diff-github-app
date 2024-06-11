@@ -113,3 +113,13 @@ a.link-button:hover {
 :root.dark .box-shadow-regular {
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.5);
 }
+
+.native-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 0.5rem;
+}
+.native-button:hover {
+  background-color: var(--color-background-el);
+}

@@ -6,7 +6,7 @@
     "format": "prettier . --write --list-different",
     "lint": "eslint . --fix --max-warnings=0",
     "start": "netlify functions:serve --port 6868",
-    "dev:ui": "vite dev --config src/ui/vite.config.js",
+    "dev:ui": "vite dev --host --config src/ui/vite.config.js",
     "build": "vite build --config src/ui/vite.config.js",
     "type-check:ui": "vue-tsc --noEmit --project src/ui/tsconfig.json",
     "type-check:rest": "tsc --noEmit",

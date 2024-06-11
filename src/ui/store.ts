@@ -8,7 +8,8 @@ import {
   Project
 } from '@commonTypes'
 
-export interface SetStateOptions {
+export interface SetStateOptions<T = any> {
+  data?: T
   replace?: boolean
   throwError?: boolean
 }
@@ -20,7 +21,8 @@ interface MainStoreState {
   publicConfig?: PublicConfig
   hasSignedIn: boolean
   user?: User
-  projects: Project[]
+  projects?: Project[]
+  isLoadingProjects: boolean
 }
 
 export const useMainStore = defineStore('main', {
@@ -31,7 +33,8 @@ export const useMainStore = defineStore('main', {
     publicConfig: undefined,
     hasSignedIn: false,
     user: undefined,
-    projects: []
+    projects: undefined,
+    isLoadingProjects: false
   }),
 
   getters: {
@@ -96,16 +99,23 @@ export const useMainStore = defineStore('main', {
     },
 
     async fetchProjects({
+      data,
       replace = false,
       throwError = true
-    }: SetStateOptions = {}) {
-      if (this.projects.length && replace === false) return
+    }: SetStateOptions<Project[]> = {}) {
+      if (data) {
+        return (this.projects = data)
+      }
 
+      if (this.projects?.length && replace === false) return
+
+      this.isLoadingProjects = true
       try {
         this.projects = await getProjects()
       } catch (err) {
         throwError && Promise.reject(err)
       }
+      this.isLoadingProjects = false
     }
   }
 })

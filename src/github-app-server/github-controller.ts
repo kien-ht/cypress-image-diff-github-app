@@ -79,21 +79,41 @@ export class GithubUserController {
     this.octokit = new Octokit({ auth: token })
   }
 
-  async getUserProjects(installationId: number): Promise<GithubProject[]> {
-    const { data } =
-      await this.octokit.rest.apps.listInstallationReposForAuthenticatedUser({
-        installation_id: installationId,
-        // TODO: Need to do better pagination
+  async getUserProjects(): Promise<GithubProject[]> {
+    const { data: installationData } =
+      await this.octokit.rest.apps.listInstallationsForAuthenticatedUser({
+        // TODO: if there are more than 100 installations associated with this single user, it will be a problem
         per_page: 100
       })
 
-    return data.repositories.map((r) => ({
-      repositoryId: r.id,
-      owner: r.owner.login,
-      name: r.name,
-      fullName: r.full_name,
-      url: r.html_url
-    }))
+    const foundInstallations = installationData.installations.filter(
+      (i) => i.app_id === Number(process.env.APP_ID)
+    )
+
+    if (!foundInstallations.length) throw Error('Not found any installation')
+
+    const repos = await Promise.all(
+      foundInstallations.map(async (installation) => {
+        const { data: repoData } =
+          await this.octokit.rest.apps.listInstallationReposForAuthenticatedUser(
+            {
+              installation_id: installation.id,
+              // TODO: if there are more than 100 repos associated with this single installation, it will be a problem
+              // Maybe limited to 100 repos per installation?
+              per_page: 100
+            }
+          )
+        return repoData.repositories.map((r) => ({
+          repositoryId: r.id,
+          owner: r.owner.login,
+          name: r.name,
+          fullName: r.full_name,
+          url: r.html_url
+        }))
+      })
+    )
+
+    return repos.flat()
   }
 }
 

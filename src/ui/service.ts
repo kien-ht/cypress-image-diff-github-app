@@ -9,6 +9,7 @@ import {
 } from '@commonTypes'
 import { PATH_TO_SERVERLESS_FUNCTIONS } from '../common/constants'
 import { useMainStore } from '@/store'
+import { CustomFetchOptions } from '@/types'
 
 monkeyPatchWindowFetch()
 
@@ -22,7 +23,7 @@ export async function getReports(
       Object.entries({ artifactsUrl }).map(([k, v]) => [k, String(v)])
     ).toString()}`
 
-    const response = await fetch(url)
+    const response = await window.fetch(url)
     if (!response.ok) throw Error((await response.json()).message)
 
     return await response.json()
@@ -33,7 +34,9 @@ export async function getReports(
 
 export async function getPublicConfig(): Promise<PublicConfig> {
   try {
-    const response = await fetch('/api/config')
+    const response = await window.fetch('/api/config', undefined, {
+      access: 'public'
+    })
     if (!response.ok) throw Error((await response.json()).message)
 
     return await response.json()
@@ -44,7 +47,7 @@ export async function getPublicConfig(): Promise<PublicConfig> {
 
 export async function getProjects(): Promise<Project[]> {
   try {
-    const response = await fetch('/api/projects')
+    const response = await window.fetch('/api/projects')
     if (!response.ok) throw Error((await response.json()).message)
 
     return await response.json()
@@ -53,15 +56,44 @@ export async function getProjects(): Promise<Project[]> {
   }
 }
 
+export async function syncProjectsWithGithub(): Promise<Project[]> {
+  try {
+    const response = await window.fetch('/api/projects/sync', {
+      method: 'POST'
+    })
+    if (!response.ok) throw Error((await response.json()).message)
+
+    return await response.json()
+  } catch (err) {
+    throw Error((err as Error).message)
+  }
+}
+
+export async function updateProjectSettings(project: Project): Promise<void> {
+  try {
+    const response = await window.fetch('/api/projects/update-settings', {
+      method: 'PATCH',
+      body: JSON.stringify(project)
+    })
+    if (!response.ok) throw Error((await response.json()).message)
+  } catch (err) {
+    throw Error((err as Error).message)
+  }
+}
+
 export async function signIn(code: string): Promise<void> {
   try {
-    const response = await fetch('/api/sign-in', {
-      method: 'POST',
-      body: JSON.stringify({ code }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
+    const response = await window.fetch(
+      '/api/sign-in',
+      {
+        method: 'POST',
+        body: JSON.stringify({ code }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      },
+      { access: 'public' }
+    )
     if (!response.ok) throw Error((await response.json()).message)
   } catch (err) {
     throw Error((err as Error).message)
@@ -70,13 +102,17 @@ export async function signIn(code: string): Promise<void> {
 
 export async function signUp(code: string): Promise<void> {
   try {
-    const response = await fetch('/api/sign-up', {
-      method: 'POST',
-      body: JSON.stringify({ code }),
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
+    const response = await window.fetch(
+      '/api/sign-up',
+      {
+        method: 'POST',
+        body: JSON.stringify({ code }),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      },
+      { access: 'public' }
+    )
     if (!response.ok) throw Error((await response.json()).message)
   } catch (err) {
     throw Error((err as Error).message)
@@ -85,10 +121,21 @@ export async function signUp(code: string): Promise<void> {
 
 export async function getUser(): Promise<User> {
   try {
-    const response = await fetch('/api/user')
+    const response = await window.fetch('/api/user')
     if (!response.ok) throw Error((await response.json()).message)
 
     return await response.json()
+  } catch (err) {
+    throw Error((err as Error).message)
+  }
+}
+
+export async function signOut(): Promise<void> {
+  try {
+    const response = await window.fetch('/api/user/sign-out', {
+      method: 'POST'
+    })
+    if (!response.ok) throw Error((await response.json()).message)
   } catch (err) {
     throw Error((err as Error).message)
   }
@@ -98,7 +145,7 @@ export async function addToStagedChanges(
   args: AddBaselinesToStagedChanges
 ): Promise<HashedSnapshotToUpdate> {
   try {
-    const response = await fetch('/api/reports/staged', {
+    const response = await window.fetch('/api/reports/staged', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -114,7 +161,7 @@ export async function addToStagedChanges(
 
 export async function updateBaselines(args: UpdateBaselines): Promise<void> {
   try {
-    const response = await fetch('/api/reports', {
+    const response = await window.fetch('/api/reports', {
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json'
@@ -129,11 +176,19 @@ export async function updateBaselines(args: UpdateBaselines): Promise<void> {
 
 function monkeyPatchWindowFetch() {
   const originalFetch = window.fetch
-  window.fetch = async function (url, config) {
+  window.fetch = async function (
+    url,
+    config,
+    { access = 'private' }: CustomFetchOptions = {}
+  ) {
     const requestUrl = `${PATH_TO_SERVERLESS_FUNCTIONS}${url}`
     const response = await originalFetch.call(this, requestUrl, config)
-    const mainStore = useMainStore()
-    mainStore.hasSignedIn = response.ok
+
+    if (access === 'private') {
+      const mainStore = useMainStore()
+      mainStore.hasSignedIn = response.ok
+    }
+
     return response
   }
 }

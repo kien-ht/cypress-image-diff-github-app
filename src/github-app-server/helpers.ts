@@ -1,6 +1,14 @@
 import crypto from 'crypto'
+import mergeWith from 'lodash/mergeWith'
+import isArray from 'lodash/isArray'
 import { type CookieSerializeOptions, parse, serialize } from 'cookie'
-import { Report, ResolvedReport } from '../common/types.js'
+
+import {
+  Project,
+  ProjectSetting,
+  Report,
+  ResolvedReport
+} from '../common/types.js'
 
 export function getReportJsonWithTotalStats(json: Report): ResolvedReport {
   return {
@@ -106,10 +114,11 @@ export function generateCookie(
   value: string,
   options: CookieSerializeOptions = {}
 ): string {
-  const defaultOptions = {
+  const defaultOptions: CookieSerializeOptions = {
     maxAge: 60 * 60 * 24 * 30,
     httpOnly: true,
-    sameSite: true
+    sameSite: true,
+    path: '/'
   }
   const cookie = serialize(name, value, { ...defaultOptions, ...options })
   return cookie
@@ -174,4 +183,29 @@ export async function downloadArtifacts(url?: string): Promise<Report> {
       }))
     }))
   }
+}
+
+export function maskSecret(source: string) {
+  return source.slice(0, 6) + '******' + source.slice(-4)
+}
+
+export function getDefaultProjectSettings(): ProjectSetting {
+  return {
+    envs: []
+  }
+}
+
+export function maskProjectSecrets(project: Project): Project {
+  return mergeWith(
+    project,
+    {
+      settings: {
+        envs: project.settings.envs.map((e) => ({
+          ...e,
+          value: maskSecret(e.value)
+        }))
+      }
+    },
+    (a, b) => (isArray(b) ? b : undefined)
+  )
 }

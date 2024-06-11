@@ -8,7 +8,7 @@
       @select="(e) => $router.push({ name: e })"
     >
       <el-menu-item
-        :disabled="mainStore.projects.length === 0"
+        :disabled="!mainStore.projects || mainStore.projects.length === 0"
         :index="DashboardMenu.Pipelines"
       >
         <BaseIcon name="pipeline" />

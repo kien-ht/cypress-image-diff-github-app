@@ -103,7 +103,8 @@
           <el-table-column width="60">
             <template #default="{ row }">
               <button
-                class="remove-button"
+                :style="{ color: 'var(--color-danger)' }"
+                class="native-button"
                 type="button"
                 @click="onClickRemove(row)"
               >
@@ -116,6 +117,7 @@
         <div style="flex: 1 1 auto" />
 
         <el-button
+          v-loading="isSaving"
           type="primary"
           @click="onClickSave"
         >
@@ -132,7 +134,7 @@ export interface DashboardMenuProjectsSettingsProps {
 }
 
 export interface DashboardMenuProjectsSettingsEmits {
-  (e: 'saved', project: Project): void
+  (e: 'saved', project: Project, closeFn: () => void): void
 }
 </script>
 
@@ -142,7 +144,8 @@ import {
   type FormInstance,
   ElDrawer as ElDrawerComponent
 } from 'element-plus'
-import merge from 'lodash/merge'
+import mergeWith from 'lodash/mergeWith'
+import isArray from 'lodash/isArray'
 
 import type { EnvironmentVariable, Project } from '@commonTypes'
 
@@ -150,6 +153,7 @@ const props = defineProps<DashboardMenuProjectsSettingsProps>()
 
 const emit = defineEmits<DashboardMenuProjectsSettingsEmits>()
 
+const isSaving = ref(false)
 const isSettingsDrawerOpen = ref(false)
 const envVariableForm = reactive<EnvironmentVariable>({
   key: '',
@@ -178,15 +182,23 @@ function submitForm() {
 }
 
 async function onClickSave() {
+  isSaving.value = true
   emit(
     'saved',
-    merge(props.project, {
-      settings: {
-        envs: updatedEnvs.value
-      }
-    })
+    mergeWith(
+      props.project,
+      {
+        settings: {
+          envs: updatedEnvs.value
+        }
+      },
+      (a, b) => (isArray(b) ? b : undefined)
+    ),
+    () => {
+      isSaving.value = false
+      settingsDrawerRef.value!.handleClose()
+    }
   )
-  settingsDrawerRef.value!.handleClose()
 }
 
 function onClickRemove(row: EnvironmentVariable) {
@@ -214,12 +226,5 @@ function onClickRemove(row: EnvironmentVariable) {
 }
 .drawer-body > .el-form > .el-form-item:not(.submit-button) {
   flex: 1 1 auto;
-}
-
-.drawer-body .el-table .remove-button {
-  color: var(--color-danger);
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
 }
 </style>

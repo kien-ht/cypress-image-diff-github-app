@@ -21,3 +21,4 @@ export type SvgIcon =
   | 'code'
   | 'user'
   | 'pipeline'
+  | 'refresh'

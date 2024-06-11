@@ -59,7 +59,7 @@ const mainStore = useMainStore()
 
 const branchOptions = ref<SelectOption<string>[]>([])
 const projectOptions = computed(() =>
-  mainStore.projects.map((p) => ({ label: p.name, value: p.id }))
+  mainStore.projects?.map((p) => ({ label: p.name, value: p.projectId }))
 )
 
 const selectedFilters = reactive<PipelineFilter>({
@@ -115,7 +115,7 @@ function removeEmpty(source: Record<string, any>) {
 
 function setDefaultSelection() {
   selectedFilters.repo =
-    (route.query.repo as string) || projectOptions.value[0]?.value
+    (route.query.repo as string) || projectOptions.value![0]?.value
   selectedFilters.branch =
     (route.query.branch as string) || branchOptions.value[0]?.value
 }

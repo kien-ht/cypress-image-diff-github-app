@@ -31,6 +31,15 @@
           Save
         </el-button>
       </el-form-item> -->
+
+        <el-button
+          type="danger"
+          plain
+          style="margin-top: 2rem"
+          @click="onClickSignOut"
+        >
+          Sign Out
+        </el-button>
       </el-form>
 
       <el-avatar
@@ -42,14 +51,38 @@
 </template>
 
 <script lang="ts" setup>
+import { ElMessage, ElMessageBox } from 'element-plus'
+
+import { signOut } from '@/service'
 import { useMainStore } from '@/store'
+import { useRouter } from 'vue-router'
 
 const mainStore = useMainStore()
+const router = useRouter()
 
 const userForm = reactive({
   name: mainStore.user?.githubName,
   githubUrl: mainStore.user?.githubUrl
 })
+
+async function onClickSignOut() {
+  try {
+    await ElMessageBox.confirm('Would you like to sign out?', 'Sign Out', {
+      confirmButtonText: 'OK',
+      cancelButtonText: 'Cancel',
+      type: 'warning'
+    })
+    try {
+      await signOut()
+      mainStore.$reset()
+      router.push({ name: 'PageHome' })
+    } catch (err) {
+      ElMessage({ type: 'error', message: (err as Error).message })
+    }
+  } catch {
+    // empty
+  }
+}
 </script>
 
 <style scoped>

@@ -2,7 +2,19 @@
   <div class="wrapper">
     <h2 class="title">Projects</h2>
 
-    <template v-if="mainStore.projects.length">
+    <template v-if="mainStore.projects?.length === 0">
+      <p>Link your Github repository with Cypress Image Diff to get started.</p>
+
+      <a
+        :href="installationUrl"
+        class="link-button"
+      >
+        <img src="@/assets/images/github.png" />
+        <span>Install Cypress Image Diff</span>
+      </a>
+    </template>
+
+    <template v-else>
       <p>
         Here is the list of Github repositories that have installed Cypress
         Image Diff, accessible through your account. If you want to add or
@@ -17,9 +29,11 @@
       </p>
 
       <el-table
+        v-loading="isSyncingProjects || mainStore.isLoadingProjects"
+        :key="tableKey"
         size="large"
-        :data="mainStore.projects"
-        :row-key="(row: Project) => row.id"
+        :data="mainStore.projects ?? []"
+        :row-key="(row: Project) => row.projectId"
       >
         <el-table-column
           type="index"
@@ -44,6 +58,25 @@
         />
 
         <el-table-column width="135">
+          <template #header>
+            <el-tooltip
+              class="box-item"
+              effect="dark"
+              content="Sync projects with Github repositories"
+              placement="top"
+              :show-after="750"
+              :auto-close="3000"
+            >
+              <button
+                type="button"
+                class="refresh-button native-button"
+                @click="onClickSyncProjects"
+              >
+                <BaseIcon name="refresh" />
+              </button>
+            </el-tooltip>
+          </template>
+
           <template #default="{ row }">
             <DashboardMenuProjectsSettings
               :project="row"
@@ -53,32 +86,54 @@
         </el-table-column>
       </el-table>
     </template>
-
-    <template v-else>
-      <p>Link your Github repository with Cypress Image Diff to get started.</p>
-
-      <a
-        :href="installationUrl"
-        class="link-button"
-      >
-        <img src="@/assets/images/github.png" />
-        <span>Install Cypress Image Diff</span>
-      </a>
-    </template>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { useRoute } from 'vue-router'
+import { ElMessage } from 'element-plus'
+
 import type { Project } from '@commonTypes'
 import { GITHUB_APP_NAME } from '../../common/constants'
 import { useMainStore } from '@/store'
+import { syncProjectsWithGithub, updateProjectSettings } from '@/service'
+import { useRerender } from '@/hooks'
 
+const { key: tableKey, rerender: rerenderTable } = useRerender()
+const route = useRoute()
 const mainStore = useMainStore()
+const isSyncingProjects = ref(false)
 const installationUrl = `https://github.com/apps/${GITHUB_APP_NAME}/installations/new`
 
-function doSavedSettings(project: Project) {
-  // eslint-disable-next-line no-console
-  console.log(project)
+setupInstallation()
+
+async function doSavedSettings(project: Project, closeFn: () => void) {
+  try {
+    await updateProjectSettings(project)
+    ElMessage({ type: 'success', message: 'Project settings updated' })
+    closeFn()
+    await mainStore.fetchProjects({ replace: true })
+    rerenderTable()
+  } catch (err) {
+    ElMessage({ type: 'error', message: (err as Error).message })
+  }
+}
+
+async function setupInstallation() {
+  if (route.query.installation_id) {
+    await onClickSyncProjects()
+  }
+}
+
+async function onClickSyncProjects() {
+  isSyncingProjects.value = true
+  try {
+    const projects = await syncProjectsWithGithub()
+    await mainStore.fetchProjects({ data: projects })
+  } catch (err) {
+    ElMessage({ type: 'error', message: (err as Error).message })
+  }
+  isSyncingProjects.value = false
 }
 </script>
 
@@ -106,5 +161,10 @@ function doSavedSettings(project: Project) {
 .link-button {
   place-self: start;
   margin-top: 2rem;
+}
+.refresh-button {
+  display: block;
+  margin-left: auto;
+  color: currentColor;
 }
 </style>

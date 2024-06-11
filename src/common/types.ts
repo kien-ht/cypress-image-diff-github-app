@@ -214,7 +214,7 @@ export interface GithubProject {
 }
 
 export interface Project extends GithubProject {
-  id: string
+  projectId: string
   settings: ProjectSetting
 }
 
@@ -227,3 +227,5 @@ export interface EnvironmentVariable {
   key: string
   createdAt: string
 }
+
+export type ApiRouteAccess = 'private' | 'public'

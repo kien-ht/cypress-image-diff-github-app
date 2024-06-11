@@ -10,8 +10,9 @@ export const signInHandler: Handler = async (event) => {
     const token = await getGithubUserAccessToken(code)
     const githubUser = await getGithubUser(token)
 
-    const foundUserId = await dynamoDb.checkIfUserExistsByGithubId(
-      githubUser.id
+    const foundUserId = await dynamoDb.getAssociatedUserIdWithGithubId(
+      githubUser.id,
+      false
     )
     if (!foundUserId)
       throw Error('There is no account associated with this Github user')
@@ -39,15 +40,15 @@ export const signInHandler: Handler = async (event) => {
   }
 }
 
-export const signUpHandler: Handler = async (...[event, , userId]) => {
-  console.log(userId)
+export const signUpHandler: Handler = async (event) => {
   try {
     const { code } = JSON.parse(event.body ?? '{}')
     const token = await getGithubUserAccessToken(code)
     const githubUser = await getGithubUser(token)
 
-    const foundUserId = await dynamoDb.checkIfUserExistsByGithubId(
-      githubUser.id
+    const foundUserId = await dynamoDb.getAssociatedUserIdWithGithubId(
+      githubUser.id,
+      false
     )
     if (foundUserId)
       throw Error(

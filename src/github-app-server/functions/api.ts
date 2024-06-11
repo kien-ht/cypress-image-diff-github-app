@@ -12,28 +12,30 @@ import {
   addToStagedChangesHandler,
   updateReportsHandler,
   getUserHandler,
-  getProjectsHandler
+  getUserProjectsHandler,
+  syncProjectsWithGithubHandler,
+  signOutHandler,
+  updateProjectSettingsHandler
 } from '../handler-protected'
 import { getPublicConfigHandler } from '../handler-public'
 import { decrypt, getCookie, setupEnvVariables } from '../helpers'
 import { dynamoDb } from '../dynamo-db'
+import { ApiRouteAccess } from '../../common/types'
 
 setupEnvVariables()
 
 type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
-type RouteAccess = 'private' | 'public'
-
 type RouteMiddleware = (
   event: HandlerEvent,
   context: HandlerContext,
   next: Handler,
-  access: RouteAccess
+  access: ApiRouteAccess
 ) => Promise<HandlerResponse>
 
 type RouteConfig = {
   handler: Handler
-  access: RouteAccess
+  access: ApiRouteAccess
 }
 
 type RouteHandler = Partial<Record<HttpMethod, Handler | RouteConfig>>
@@ -68,8 +70,17 @@ export const handler = redirectRoutes(
     '/api/user': {
       GET: getUserHandler
     },
+    '/api/user/sign-out': {
+      POST: signOutHandler
+    },
     '/api/projects': {
-      GET: getProjectsHandler
+      GET: getUserProjectsHandler
+    },
+    '/api/projects/sync': {
+      POST: syncProjectsWithGithubHandler
+    },
+    '/api/projects/update-settings': {
+      PATCH: updateProjectSettingsHandler
     }
   },
   middleware
@@ -103,7 +114,7 @@ async function middleware(
   event: HandlerEvent,
   context: HandlerContext,
   next: Handler,
-  access: RouteAccess
+  access: ApiRouteAccess
 ): Promise<HandlerResponse> {
   if (access === 'public')
     return next(event, context) as Promise<HandlerResponse>
@@ -116,7 +127,7 @@ async function middleware(
       body: JSON.stringify({ message: 'No Access Token Found' })
     }
 
-  const userId = await dynamoDb.getUserIdByAccessToken(accessToken)
+  const userId = await dynamoDb.getAssociatedUserIdWithAccessToken(accessToken)
   if (userId) {
     event.middleware = { userId, githubAccessToken: decrypt(accessToken) }
     return next(event, context) as Promise<HandlerResponse>
