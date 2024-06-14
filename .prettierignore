@@ -1,2 +1,2 @@
-src/ui/auto-imports.d.ts
-src/ui/components.d.ts
+src/auto-imports.d.ts
+src/components.d.ts

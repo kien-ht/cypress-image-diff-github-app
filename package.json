@@ -1,14 +1,15 @@
 {
-  "name": "cypress-image-diff-html-report",
+  "name": "cypress-image-diff-github-app",
   "description": "A Github App for Cypress Image Diff",
   "scripts": {
     "prepare": "husky install",
     "format": "prettier . --write --list-different",
     "lint": "eslint . --fix --max-warnings=0",
     "start": "netlify functions:serve --port 6868",
-    "dev:ui": "vite dev --host --config src/ui/vite.config.js",
-    "build": "vite build --config src/ui/vite.config.js",
-    "type-check:ui": "vue-tsc --noEmit --project src/ui/tsconfig.json",
+    "start:smee": "smee -p 6868 -u https://smee.io/22jXmqm35ch1xsrT -P /.netlify/functions/webhooks",
+    "dev:ui": "vite dev --host",
+    "build": "vite build",
+    "type-check:ui": "vue-tsc --noEmit --project src/tsconfig.json",
     "type-check:rest": "tsc --noEmit",
     "type-check": "run-s -c type-check:*"
   },
