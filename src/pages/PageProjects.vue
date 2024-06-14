@@ -46,7 +46,10 @@
         >
           <template #default="{ row }">
             <router-link
-              :to="{ name: 'PageReportDetails', query: { id: row.id } }"
+              :to="{
+                name: 'PagePipelines',
+                query: { projectId: row.projectId }
+              }"
               >{{ row.name }}</router-link
             >
           </template>
