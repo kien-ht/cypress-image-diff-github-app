@@ -160,7 +160,7 @@
 import { ElMessage } from 'element-plus'
 import { useMainStore } from '@/store'
 import type { default as DialogViewComparison } from './DialogViewComparison.vue'
-import { TestStatus, ResolvedTest, WorkflowInstance } from '@commonTypes'
+import { TestStatus, ResolvedTest } from '@commonTypes'
 import { addToStagedChanges } from '@/service'
 
 const props = defineProps<{
@@ -193,7 +193,7 @@ async function onClickSelect(row: ResolvedTest) {
   isSelecting.value = row.name
   try {
     const data = await addToStagedChanges({
-      instance: route.query as unknown as WorkflowInstance,
+      pipelineId: route.params.pipelineId as string,
       snapshot: row
     })
     const newSelections = [

@@ -119,7 +119,7 @@ export interface DialogApprovalListEmits {
 import { useMainStore } from '@/store'
 import { ElMessage } from 'element-plus'
 import { updateBaselines } from '@/service'
-import { ResolvedTest, WorkflowInstance } from '@commonTypes'
+import { ResolvedTest } from '@commonTypes'
 
 const props = defineProps<DialogApprovalListProps>()
 const emit = defineEmits<DialogApprovalListEmits>()
@@ -136,7 +136,7 @@ async function onClickUpdateCi() {
   isUpdatingBaselines.value = true
   try {
     await updateBaselines({
-      instance: route.query as unknown as WorkflowInstance,
+      pipelineId: route.params.pipelineId as string,
       snapshots: mainStore.selectedTestsFlatten.map((s) => ({
         baselinePath: s.baselinePath,
         sha: s.comparisonSha

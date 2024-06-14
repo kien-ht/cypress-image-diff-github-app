@@ -10,6 +10,7 @@ import {
 } from '../common/types.js'
 import { App as OctokitApp, Octokit } from 'octokit'
 import { GITHUB_APP_NAME } from '../common/constants.js'
+import { dynamoDb } from './dynamo-db.js'
 
 export class GithubAppController {
   private app: OctokitApp
@@ -18,8 +19,9 @@ export class GithubAppController {
     this.app = new OctokitApp(getProbotConfig())
   }
 
-  async updateBaselines({ instance, snapshots }: UpdateBaselines) {
-    const { installationId, owner, repo, sha, ref } = instance
+  async updateBaselines({ pipelineId, snapshots }: UpdateBaselines) {
+    const { installationId, owner, repo, sha, branch } =
+      (await dynamoDb.getPipelineByPipelineId(pipelineId))!
 
     const octokit = await this.app.getInstallationOctokit(installationId)
 
@@ -49,16 +51,17 @@ export class GithubAppController {
     await octokit.rest.git.updateRef({
       owner,
       repo,
-      ref: `heads/${ref}`,
+      ref: `heads/${branch}`,
       sha: commitData.sha
     })
   }
 
   async addToStagedChanges({
-    instance,
+    pipelineId,
     snapshot
   }: AddBaselinesToStagedChanges): Promise<HashedSnapshotToUpdate> {
-    const { installationId, owner, repo } = instance
+    const { installationId, owner, repo } =
+      (await dynamoDb.getPipelineByPipelineId(pipelineId))!
     const octokit = await this.app.getInstallationOctokit(installationId)
 
     return await getSnapshotsHash({ owner, repo, snapshot }, octokit)

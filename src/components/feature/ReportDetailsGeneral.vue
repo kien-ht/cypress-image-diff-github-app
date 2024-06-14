@@ -101,80 +101,78 @@
         </template>
       </el-skeleton>
 
-      <template v-if="!isEmpty($route.query)">
-        <h4>Github Repository</h4>
-        <div class="general-wrapper__cell">
-          <img
-            src="@/assets/images/github.png"
-            height="20"
-          />
-          <a
-            :href="pullRequest.repoUrl"
-            target="_blank"
-            class="external-link"
-          >
-            {{ pullRequest.repoName }}
-            <BaseIcon name="external-link" />
-          </a>
-        </div>
-
-        <div
-          v-if="pullRequest.author"
-          class="general-wrapper__cell"
-        >
-          <img
-            :src="pullRequest.authorAvatar"
-            width="20"
-            style="border-radius: 4px"
-          />
-          <span
-            :href="pullRequest.url"
-            target="_blank"
-          >
-            {{ pullRequest.author }}
-            pushed
-          </span>
-        </div>
-
-        <div class="general-wrapper__cell head-branch">
-          <BaseIcon name="branch" />
-          <code>
-            {{ pullRequest.branch }}
-          </code>
-        </div>
-
-        <div class="general-wrapper__cell target-branch">
-          <BaseIcon
-            name="right-chevron"
-            style="color: var(--color-text)"
-          />
-          <code style="margin-left: -0.5rem">
-            {{ pullRequest.targetBranch }}
-          </code>
-        </div>
-
-        <div class="general-wrapper__cell">
-          <BaseIcon name="commit" />
-          <a
-            :href="pullRequest.commitUrl"
-            target="_blank"
-            class="external-link"
-          >
-            Commit
-            {{ pullRequest.commitHash.slice(0, 7) }}
-            <BaseIcon name="external-link" />
-          </a>
-        </div>
-
+      <h4>Github Repository</h4>
+      <div class="general-wrapper__cell">
+        <img
+          src="@/assets/images/github.png"
+          height="20"
+        />
         <a
+          :href="pullRequest.repoUrl"
+          target="_blank"
+          class="external-link"
+        >
+          {{ pullRequest.repoName }}
+          <BaseIcon name="external-link" />
+        </a>
+      </div>
+
+      <div
+        v-if="pullRequest.author"
+        class="general-wrapper__cell"
+      >
+        <img
+          :src="pullRequest.authorAvatar"
+          width="20"
+          style="border-radius: 4px"
+        />
+        <span
           :href="pullRequest.url"
           target="_blank"
-          class="link-button"
         >
-          <BaseIcon name="pull-request" />
-          <span>See Pull Request</span>
+          {{ pullRequest.author }}
+          pushed
+        </span>
+      </div>
+
+      <div class="general-wrapper__cell head-branch">
+        <BaseIcon name="branch" />
+        <code>
+          {{ pullRequest.branch }}
+        </code>
+      </div>
+
+      <div class="general-wrapper__cell target-branch">
+        <BaseIcon
+          name="right-chevron"
+          style="color: var(--color-text)"
+        />
+        <code style="margin-left: -0.5rem">
+          {{ pullRequest.targetBranch }}
+        </code>
+      </div>
+
+      <div class="general-wrapper__cell">
+        <BaseIcon name="commit" />
+        <a
+          :href="pullRequest.commitUrl"
+          target="_blank"
+          class="external-link"
+        >
+          Commit
+          {{ pullRequest.commitHash?.slice(0, 7) }}
+          <BaseIcon name="external-link" />
         </a>
-      </template>
+      </div>
+
+      <a
+        :href="pullRequest.url"
+        target="_blank"
+        class="link-button"
+      >
+        <BaseIcon name="pull-request" />
+        <span>See Pull Request</span>
+      </a>
 
       <template v-if="mainStore.report">
         <h4>Environment</h4>
@@ -243,40 +241,54 @@
 export type Browser = 'chrome' | 'edge' | 'firefox' | 'safari' | 'electron'
 
 export interface PullRequestInstance {
-  url: string
-  repoName: string
-  repoUrl: string
-  branch: string
+  url?: string
+  repoName?: string
+  repoUrl?: string
+  branch?: string
   author?: string
   authorAvatar?: string
-  targetBranch: string
-  commitHash: string
-  commitUrl: string
+  targetBranch?: string
+  commitHash?: string
+  commitUrl?: string
+}
+
+export interface ReportDetailsGeneralProps {
+  pipeline?: ResolvedPipeline
 }
 </script>
 
 <script lang="ts" setup>
+import type { ResolvedPipeline } from '@commonTypes'
 import { useMainStore } from '@/store'
-import { DetailsUrlQuery } from '@commonTypes'
 import chrome from '@/assets/images/chrome.png'
 import edge from '@/assets/images/edge.png'
 import firefox from '@/assets/images/firefox.png'
 import safari from '@/assets/images/safari.png'
 import electron from '@/assets/images/electron.png'
 
+const props = defineProps<ReportDetailsGeneralProps>()
+
 const mainStore = useMainStore()
-const route = useRoute()
 const isExpanded = ref(true)
 
 const pullRequest = computed<PullRequestInstance>(() => {
-  const { pullNumber, owner, repo, ref, sha, targetRef, author, authorAvatar } =
-    route.query as unknown as DetailsUrlQuery
+  const {
+    pullNumber,
+    owner,
+    repo,
+    branch,
+    sha,
+    targetBranch,
+    author,
+    authorAvatar
+  } = props.pipeline ?? {}
+
   return {
     url: `https://github.com/${owner}/${repo}/pull/${pullNumber}`,
     repoName: `${owner}/${repo}`,
     repoUrl: `https://github.com/${owner}/${repo}`,
-    branch: ref,
-    targetBranch: targetRef,
+    branch,
+    targetBranch,
     commitHash: sha,
     commitUrl: `https://github.com/${owner}/${repo}/pull/${pullNumber}/commits/${sha}`,
     author,
@@ -308,10 +320,6 @@ const browser = computed(() => {
     mainStore.report?.browserName.toLowerCase().includes(key)
   )
 })
-
-function isEmpty(obj: Record<any, any>) {
-  return Object.keys(obj).length === 0
-}
 </script>
 
 <style scoped>

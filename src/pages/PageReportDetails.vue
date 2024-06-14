@@ -10,7 +10,7 @@
   </el-breadcrumb>
 
   <main class="body">
-    <ReportDetailsGeneral />
+    <ReportDetailsGeneral :pipeline="pipeline" />
 
     <div
       class="body__content-wrapper"

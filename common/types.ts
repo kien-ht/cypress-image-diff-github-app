@@ -120,22 +120,6 @@ export interface UserConfig extends GenerateConfig, StartConfig {}
 export interface ResolvedUserConfig
   extends Required<Omit<UserConfig, 'reportJsonDir'>> {}
 
-export interface WorkflowInstance {
-  installationId: number
-  owner: string
-  repo: string
-  sha: string
-  ref: string
-}
-
-export interface DetailsUrlQuery extends WorkflowInstance {
-  pullNumber: number
-  targetRef: string
-  author?: string
-  authorAvatar?: string
-  artifactsUrl?: string
-}
-
 export type PipelineStatus = GithubCommitState
 
 export interface RawPipeline {
@@ -192,12 +176,12 @@ export interface HashedSnapshotToUpdate {
 }
 
 export interface UpdateBaselines {
-  instance: WorkflowInstance
+  pipelineId: string
   snapshots: HashedSnapshotToUpdate[]
 }
 
 export interface AddBaselinesToStagedChanges {
-  instance: WorkflowInstance
+  pipelineId: string
   snapshot: SnapshotToUpdate
 }
 
