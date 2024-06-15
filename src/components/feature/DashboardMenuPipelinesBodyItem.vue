@@ -162,7 +162,4 @@ const failPercentage = computed(() => {
   left: unset;
   right: 0;
 }
-.pipelines-body .custom-el-progress-reverse :deep(.el-progress-bar__outer) {
-  background-color: transparent;
-}
 </style>
