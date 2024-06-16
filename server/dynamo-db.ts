@@ -302,7 +302,8 @@ class DynamoDbHelpers {
       TableName: process.env.DB_PIPELINES_TABLE_NAME!,
       IndexName: 'projectId-createdAt-index',
       KeyConditionExpression: 'projectId = :value',
-      ExpressionAttributeValues: { ':value': projectId }
+      ExpressionAttributeValues: { ':value': projectId },
+      ScanIndexForward: false
     })
     const data = await this.docClient.send(command)
 
