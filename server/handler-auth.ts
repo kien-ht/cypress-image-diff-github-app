@@ -1,4 +1,5 @@
 import { Handler } from '@netlify/functions'
+import fetch from 'node-fetch'
 
 import { dynamoDb } from './dynamo-db'
 import { generateCookie } from './helpers'

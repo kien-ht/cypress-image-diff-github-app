@@ -6,7 +6,11 @@
 
     <DashboardMenuPipelinesFilter @searched="doSearched" />
 
-    <div class="pipelines">
+    <div
+      v-loading="isLoadingPipelines"
+      class="pipelines"
+      :class="{ 'pipelines--empty': pipelines.length === 0 }"
+    >
       <template
         v-for="pipeline in pipelines"
         :key="pipeline.pipelineId"
@@ -33,13 +37,16 @@ import { getPipelines } from '@/service'
 import { ElMessage } from 'element-plus'
 
 const pipelines = ref<CreatedPipeline[]>([])
+const isLoadingPipelines = ref(false)
 
 async function doSearched(filters: PipelineFilter) {
+  isLoadingPipelines.value = true
   try {
     pipelines.value = await getPipelines(filters)
   } catch (err) {
     ElMessage({ type: 'error', message: (err as Error).message })
   }
+  isLoadingPipelines.value = false
 }
 </script>
 
@@ -60,6 +67,9 @@ async function doSearched(filters: PipelineFilter) {
 .wrapper > .pipelines {
   display: grid;
   grid-template-columns: 15rem minmax(0, 1fr);
+}
+.wrapper > .pipelines.pipelines--empty :deep(.el-loading-spinner) {
+  margin-top: 0;
 }
 
 .wrapper > .pipelines > .pipelines-timestamp {

@@ -5,7 +5,7 @@
     <el-menu
       :default-active="($route.name as string) || DashboardMenu.Projects"
       class="el-menu-vertical-demo box-shadow-regular"
-      @select="(e: DashboardMenu) => $router.push({ name: e })"
+      @select="(e: string) => $router.push({ name: e })"
     >
       <el-menu-item
         :disabled="!mainStore.projects || mainStore.projects.length === 0"

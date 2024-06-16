@@ -19,11 +19,13 @@
           {{ props.pipeline.repo }}
         </span>
 
-        <BaseIcon
-          name="branch"
-          style="margin-left: 1rem"
-        />
-        <span>{{ props.pipeline.branch }}</span>
+        <template v-if="props.pipeline.branch">
+          <BaseIcon
+            name="branch"
+            style="margin-left: 1rem"
+          />
+          <span>{{ props.pipeline.branch }}</span>
+        </template>
       </div>
     </div>
 
