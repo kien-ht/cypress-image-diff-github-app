@@ -37,20 +37,21 @@ export const appFn = (app: Probot) => {
           repo: context.payload.repository.name
         })
 
-        const pullRequest = pullRequests.find((p) => p.head.sha === sha)!
+        const pullRequest = pullRequests.find((p) => p.head.sha === sha)
 
         const { pipelineId } = await dynamoDb.createPipeline({
           installationId,
           owner,
           sha,
-          pullNumber: pullRequest.number,
-          targetBranch: pullRequest.base.ref,
-          commitMessage: pullRequest.title,
-          author: pullRequest.head.user?.login,
-          authorAvatar: pullRequest.head.user?.avatar_url,
+          commitUrl: context.payload.commit.html_url,
+          pullNumber: pullRequest?.number,
+          targetBranch: pullRequest?.base.ref,
+          commitMessage: context.payload.commit.commit.message,
+          author: context.payload.commit.author?.login,
+          authorAvatar: context.payload.commit.author?.avatar_url,
           repo,
           repositoryId: repoId,
-          branch: pullRequest.head.ref,
+          branch: pullRequest?.head.ref,
           status: 'pending'
         })
 

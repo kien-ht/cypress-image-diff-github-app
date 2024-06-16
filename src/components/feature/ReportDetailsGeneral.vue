@@ -126,23 +126,26 @@
           width="20"
           style="border-radius: 4px"
         />
-        <span
-          :href="pullRequest.url"
-          target="_blank"
-        >
+        <span>
           {{ pullRequest.author }}
           pushed
         </span>
       </div>
 
-      <div class="general-wrapper__cell head-branch">
+      <div
+        v-if="pullRequest.branch"
+        class="general-wrapper__cell head-branch"
+      >
         <BaseIcon name="branch" />
         <code>
           {{ pullRequest.branch }}
         </code>
       </div>
 
-      <div class="general-wrapper__cell target-branch">
+      <div
+        v-if="pullRequest.targetBranch"
+        class="general-wrapper__cell target-branch"
+      >
         <BaseIcon
           name="right-chevron"
           style="color: var(--color-text)"
@@ -166,6 +169,7 @@
       </div>
 
       <a
+        v-if="pullRequest.url"
         :href="pullRequest.url"
         target="_blank"
         class="link-button"
@@ -273,6 +277,7 @@ const isExpanded = ref(true)
 
 const pullRequest = computed<PullRequestInstance>(() => {
   const {
+    commitUrl,
     pullNumber,
     owner,
     repo,
@@ -284,13 +289,15 @@ const pullRequest = computed<PullRequestInstance>(() => {
   } = props.pipeline ?? {}
 
   return {
-    url: `https://github.com/${owner}/${repo}/pull/${pullNumber}`,
+    url: pullNumber
+      ? `https://github.com/${owner}/${repo}/pull/${pullNumber}`
+      : undefined,
     repoName: `${owner}/${repo}`,
     repoUrl: `https://github.com/${owner}/${repo}`,
     branch,
     targetBranch,
     commitHash: sha,
-    commitUrl: `https://github.com/${owner}/${repo}/pull/${pullNumber}/commits/${sha}`,
+    commitUrl,
     author,
     authorAvatar
   }

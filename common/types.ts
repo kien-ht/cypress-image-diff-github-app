@@ -126,8 +126,9 @@ export interface RawPipeline {
   installationId: number
   owner: string
   sha: string
-  pullNumber: number
-  targetBranch: string
+  commitUrl: string
+  pullNumber?: number
+  targetBranch?: string
   artifactsUrl?: string
   commitMessage: string
   total?: number
@@ -137,7 +138,7 @@ export interface RawPipeline {
   authorAvatar?: string
   repo: string
   repositoryId: number
-  branch: string
+  branch?: string
   status: PipelineStatus
 }
 
